@@ -207,7 +207,7 @@ pub fn model<'a>(
     let measurements: Vec<(PathBuf, Measurements)> = from_json_files::<Measurements>(out_dir)?;
 
     // put it in the right format using the same timestamp for every model.
-    let baseline = from_measurements(version, &measurements, Some(Utc::now()));
+    let baseline = from_measurements(version, &measurements, Some(Utc::now()))?;
 
     // write a file for each baseline measurement
     for model in &baseline.models {
@@ -234,8 +234,8 @@ fn from_measurements(
     version: Version,
     measurements: &[(PathBuf, Measurements)],
     ts: Option<DateTime<Utc>>,
-) -> Baseline {
-    let models = measurements
+) -> Result<Baseline, CalculateError> {
+    let models: Vec<MetricModel> = measurements
         .into_iter()
         .map(|(path, measurements)| {
             // TODO fix unwraps
@@ -251,8 +251,12 @@ fn from_measurements(
         })
         .collect();
 
-    Baseline {
-        version: version,
-        models: models,
+    if models.is_empty() {
+        Err(CalculateError::BaselineWithNoModelsErr())
+    } else {
+        Ok(Baseline {
+            version: version,
+            models: models,
+        })
     }
 }

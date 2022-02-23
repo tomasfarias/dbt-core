@@ -42,8 +42,10 @@ pub enum CalculateError {
     SerializationErr(serde_json::Error),
     #[error("{}", .0)]
     CalculateIOError(IOError),
-    #[error("Hyperfine child process exited with non-zero exit code: {}", .0)]
+    #[error("HyperfineNonZeroExitCode: Hyperfine child process exited with non-zero exit code: {}", .0)]
     HyperfineNonZeroExitCode(i32),
+    #[error("BaselineWithNoModelsErr: Cannot create a baseline from zero models.")]
+    BaselineWithNoModelsErr(),
 }
 
 impl From<IOError> for CalculateError {

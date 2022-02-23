@@ -62,6 +62,10 @@ fn run_app() -> Result<i32, CalculateError> {
             tmp_dir,
             n_runs,
         } => {
+            // TODO REMOVE THIS DEBUG LINE
+            let here = PathBuf::from("./");
+            println!("./ = {:?}", fs::canonicalize(&here));
+
             // resolve relative paths to absolute
             let absolute_projects_dir = fs::canonicalize(&projects_dir)
                 .or_else(|e| Err(IOError::UnresolvablePathError(projects_dir.clone(), e)))?;

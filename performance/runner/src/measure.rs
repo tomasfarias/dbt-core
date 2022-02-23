@@ -204,7 +204,7 @@ pub fn model<'a>(
     }
 
     // read what hyperfine wrote
-    let measurements: Vec<(PathBuf, Measurements)> = from_json_files::<Measurements>(out_dir)?;
+    let measurements: Vec<(PathBuf, Measurements)> = from_json_files::<Measurements>(tmp_dir)?;
 
     // put it in the right format using the same timestamp for every model.
     let baseline = from_measurements(version, &measurements, Some(Utc::now()))?;

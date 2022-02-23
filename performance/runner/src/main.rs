@@ -5,7 +5,7 @@ mod exceptions;
 mod measure;
 mod types;
 
-use crate::exceptions::{CalculateError, IOError};
+use crate::exceptions::CalculateError;
 use crate::types::{Calculation, Version};
 use std::fs;
 use std::path::PathBuf;

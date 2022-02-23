@@ -175,7 +175,7 @@ pub fn take_samples(
     Ok(samples)
 }
 
-// Calls hyperfine via system command, reads in the results, and writes out a Baseline json file.
+// Calls hyperfine via system command, reads in the results, and writes out Baseline json files.
 // Intended to be called after each new version is released.
 pub fn model<'a>(
     version: Version,
@@ -183,7 +183,7 @@ pub fn model<'a>(
     out_dir: &PathBuf,
     tmp_dir: &PathBuf,
     n_runs: i32,
-) -> Result<(), CalculateError> {
+) -> Result<Baseline, CalculateError> {
     for (path, project_name, hcmd) in get_projects(projects_directory)? {
         let metric = Metric {
             name: hcmd.name.to_owned(),
@@ -217,15 +217,17 @@ pub fn model<'a>(
         out_file.push(model.metric.filename());
         out_file.set_extension("json");
 
-        // write the newly modeled baseline to the above path
+        // get the serialized string
         let s = serde_json::to_string(&baseline)
             .or_else(|e| Err(CalculateError::SerializationErr(e)))?;
 
+        // TODO writing files in _this function_ isn't the most graceful way organize the code.
+        // write the newly modeled baseline to the above path
         fs::write(out_file.clone(), s)
             .or_else(|e| Err(IOError::WriteErr(out_file.clone(), Some(e))))?;
     }
 
-    Ok(())
+    Ok(baseline)
 }
 
 fn from_measurements(

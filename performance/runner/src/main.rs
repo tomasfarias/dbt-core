@@ -7,7 +7,6 @@ mod types;
 
 use crate::exceptions::CalculateError;
 use crate::types::{Calculation, Version};
-use std::fs;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -62,21 +61,19 @@ fn run_app() -> Result<i32, CalculateError> {
             tmp_dir,
             n_runs,
         } => {
-            // TODO REMOVE THIS DEBUG LINE
-            let here = PathBuf::from("./");
-            println!("./ = {:?}", fs::canonicalize(&here));
-
-            // resolve relative paths to absolute
-            // let absolute_projects_dir = fs::canonicalize(&projects_dir)
-            //     .or_else(|e| Err(IOError::UnresolvablePathError(projects_dir.clone(), e)))?;
-            // let absolute_baselines_dir = fs::canonicalize(&baselines_dir)
-            //     .or_else(|e| Err(IOError::UnresolvablePathError(projects_dir.clone(), e)))?;
-            // let absolute_tmp_dir = fs::canonicalize(&tmp_dir)
-            //     .or_else(|e| Err(IOError::UnresolvablePathError(projects_dir.clone(), e)))?;
+            // note: I tried resolving relative paths here, and I couldn't get it to work.
+            // this means the cli requires absolute paths for now.
 
             // if there are any nonzero exit codes from the hyperfine runs,
             // return the first one. otherwise return zero.
-            measure::model(version, &projects_dir, &baselines_dir, &tmp_dir, n_runs)?;
+            let baseline =
+                measure::model(version, &projects_dir, &baselines_dir, &tmp_dir, n_runs)?;
+
+            // print the results to the console for viewing in CI
+            println!(":: Modeling Results ::");
+            let s = serde_json::to_string_pretty(&baseline)
+                .or_else(|e| Err(CalculateError::SerializationErr(e)))?;
+            println!("{}", s);
 
             Ok(0)
         }

@@ -76,13 +76,7 @@ fn run_app() -> Result<i32, CalculateError> {
 
             // if there are any nonzero exit codes from the hyperfine runs,
             // return the first one. otherwise return zero.
-            measure::model(
-                version,
-                &projects_dir,
-                &baselines_dir,
-                &tmp_dir,
-                n_runs,
-            )?;
+            measure::model(version, &projects_dir, &baselines_dir, &tmp_dir, n_runs)?;
 
             Ok(0)
         }

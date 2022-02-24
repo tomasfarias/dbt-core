@@ -5,7 +5,7 @@ mod exceptions;
 mod measure;
 mod types;
 
-use crate::exceptions::CalculateError;
+use crate::exceptions::RunnerError;
 use crate::types::{Calculation, Version};
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -50,7 +50,7 @@ enum Opt {
 //
 // This is where all the printing should happen. Exiting happens
 // in main, and module functions should only return values.
-fn run_app() -> Result<i32, CalculateError> {
+fn run_app() -> Result<i32, RunnerError> {
     // match what the user inputs from the cli
     match Opt::from_args() {
         // model subcommand
@@ -72,7 +72,7 @@ fn run_app() -> Result<i32, CalculateError> {
             // print the results to the console for viewing in CI
             println!(":: Modeling Results ::");
             let s = serde_json::to_string_pretty(&baseline)
-                .or_else(|e| Err(CalculateError::SerializationErr(e)))?;
+                .or_else(|e| Err(RunnerError::SerializationErr(e)))?;
             println!("{}", s);
 
             Ok(0)

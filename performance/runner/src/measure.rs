@@ -217,7 +217,7 @@ pub fn model<'a>(
 
         // write out the version directory. ignore errors since if it's already made that's fine.
         match fs::create_dir(out_file.clone()) {
-            _ => ()
+            _ => (),
         };
 
         // continue creating the correct filename

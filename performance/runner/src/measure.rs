@@ -214,6 +214,13 @@ pub fn model<'a>(
         // create the correct filename like `/out_dir/1.0.0/parse___2000_models.json`
         let mut out_file = out_dir.clone();
         out_file.push(version.to_string());
+
+        // write out the version directory. ignore errors since if it's already made that's fine.
+        match fs::create_dir(out_file.clone()) {
+            _ => ()
+        };
+
+        // continue creating the correct filename
         out_file.push(model.metric.filename());
         out_file.set_extension("json");
 

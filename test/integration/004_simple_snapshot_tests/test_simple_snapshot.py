@@ -36,35 +36,35 @@ class BaseSimpleSnapshotTest(DBTIntegrationTest):
         self.assert_case_tables_equal('snapshot_actual', 'snapshot_expected')
 
 
-class TestSimpleSnapshotFiles(BaseSimpleSnapshotTest):
-    @property
-    def project_config(self):
-        return {
-            'config-version': 2,
-            "seed-paths": ['seeds'],
-            "snapshot-paths": ['snapshots-pg'],
-            'macro-paths': ['macros'],
-        }
+# class TestSimpleSnapshotFiles(BaseSimpleSnapshotTest):
+#     @property
+#     def project_config(self):
+#         return {
+#             'config-version': 2,
+#             "seed-paths": ['seeds'],
+#             "snapshot-paths": ['snapshots-pg'],
+#             'macro-paths': ['macros'],
+#         }
 
-    @use_profile('postgres')
-    def test__postgres_ref_snapshot(self):
-        self.dbt_run_seed_snapshot()
-        results = self.run_dbt(['run'])
-        self.assertEqual(len(results), 1)
+#     @use_profile('postgres')
+#     def test__postgres_ref_snapshot(self):
+#         self.dbt_run_seed_snapshot()
+#         results = self.run_dbt(['run'])
+#         self.assertEqual(len(results), 1)
 
-    @use_profile('postgres')
-    def test__postgres__simple_snapshot(self):
-        self.dbt_run_seed_snapshot()
+#     @use_profile('postgres')
+#     def test__postgres__simple_snapshot(self):
+#         self.dbt_run_seed_snapshot()
 
-        self.assert_expected()
+#         self.assert_expected()
 
-        self.run_sql_file("invalidate_postgres.sql")
-        self.run_sql_file("update.sql")
+#         self.run_sql_file("invalidate_postgres.sql")
+#         self.run_sql_file("update.sql")
 
-        results = self.run_snapshot()
-        self.assertEqual(len(results),  self.NUM_SNAPSHOT_MODELS)
+#         results = self.run_snapshot()
+#         self.assertEqual(len(results),  self.NUM_SNAPSHOT_MODELS)
 
-        self.assert_expected()
+#         self.assert_expected()
 
 
 class TestSimpleColumnSnapshotFiles(DBTIntegrationTest):

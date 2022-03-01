@@ -71,26 +71,26 @@ from dbt.tests.fixtures.project import write_project_files
 # select 1 as id
 # """
 
-# macros_custom_snapshot__custom_sql = """
-# {# A "custom" strategy that's really just the timestamp one #}
-# {% macro snapshot_custom_strategy(node, snapshotted_rel, current_rel, config, target_exists) %}
-#     {% set primary_key = config['unique_key'] %}
-#     {% set updated_at = config['updated_at'] %}
+macros_custom_snapshot__custom_sql = """
+{# A "custom" strategy that's really just the timestamp one #}
+{% macro snapshot_custom_strategy(node, snapshotted_rel, current_rel, config, target_exists) %}
+    {% set primary_key = config['unique_key'] %}
+    {% set updated_at = config['updated_at'] %}
 
-#     {% set row_changed_expr -%}
-#         ({{ snapshotted_rel }}.{{ updated_at }} < {{ current_rel }}.{{ updated_at }})
-#     {%- endset %}
+    {% set row_changed_expr -%}
+        ({{ snapshotted_rel }}.{{ updated_at }} < {{ current_rel }}.{{ updated_at }})
+    {%- endset %}
 
-#     {% set scd_id_expr = snapshot_hash_arguments([primary_key, updated_at]) %}
+    {% set scd_id_expr = snapshot_hash_arguments([primary_key, updated_at]) %}
 
-#     {% do return({
-#         "unique_key": primary_key,
-#         "updated_at": updated_at,
-#         "row_changed": row_changed_expr,
-#         "scd_id": scd_id_expr
-#     }) %}
-# {% endmacro %}
-# """
+    {% do return({
+        "unique_key": primary_key,
+        "updated_at": updated_at,
+        "row_changed": row_changed_expr,
+        "scd_id": scd_id_expr
+    }) %}
+{% endmacro %}
+"""
 
 # test_snapshots_slow__test_timestamps_sql = """
 
@@ -592,9 +592,9 @@ snapshots_pg__snapshot_sql = """
 #     return {"snapshot_actual.sql": models_collision__snapshot_actual_sql}
 
 
-# @pytest.fixture
-# def macros_custom_snapshot():
-#     return {"custom.sql": macros_custom_snapshot__custom_sql}
+@pytest.fixture
+def macros_custom_snapshot():
+    return {"custom.sql": macros_custom_snapshot__custom_sql}
 
 
 # @pytest.fixture
@@ -691,7 +691,7 @@ def project_files(
     #     snapshots_select,
     #     snapshots_pg_custom,
     #     models_collision,
-    #     macros_custom_snapshot,
+    macros_custom_snapshot,
     #     test_snapshots_slow,
     #     snapshots_check_col,
     #     snapshots_invalid,
@@ -713,7 +713,7 @@ def project_files(
     #     write_project_files(project_root, "snapshots-select", snapshots_select)
     #     write_project_files(project_root, "snapshots-pg-custom", snapshots_pg_custom)
     #     write_project_files(project_root, "models-collision", models_collision)
-    #     write_project_files(project_root, "macros-custom-snapshot", macros_custom_snapshot)
+    write_project_files(project_root, "macros-custom-snapshot", macros_custom_snapshot)
     #     write_project_files(project_root, "test-snapshots-slow", test_snapshots_slow)
     #     write_project_files(project_root, "snapshots-check-col", snapshots_check_col)
     #     write_project_files(project_root, "snapshots-invalid", snapshots_invalid)

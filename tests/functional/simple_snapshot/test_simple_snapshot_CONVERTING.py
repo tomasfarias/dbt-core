@@ -1,4 +1,5 @@
 # flake8: noqa
+# this file just exists to pull tests out of as I go
 from test.integration.base import DBTIntegrationTest, use_profile
 from datetime import datetime
 import pytz
@@ -246,71 +247,71 @@ def project_config(self):
 #     self.assertTableDoesNotExist('snapshot_kelly')
 #     self.assertTableDoesNotExist('snapshot_actual')
 
-
-def project_config(self):
-    return {
-        "config-version": 2,
-        "seed-paths": ["seeds"],
-        "snapshot-paths": ["snapshots-select-noconfig"],
-        "snapshots": {
-            "test": {
-                "target_schema": self.unique_schema(),
-                "unique_key": "id || '-' || first_name",
-                "strategy": "timestamp",
-                "updated_at": "updated_at",
-            },
-        },
-        "macro-paths": ["macros"],
-    }
-
-
-NUM_SNAPSHOT_MODELS = 1
+# not test_cross_schema_snapshot
+# def project_config(self):
+#     return {
+#         "config-version": 2,
+#         "seed-paths": ["seeds"],
+#         "snapshot-paths": ["snapshots-select-noconfig"],
+#         "snapshots": {
+#             "test": {
+#                 "target_schema": self.unique_schema(),
+#                 "unique_key": "id || '-' || first_name",
+#                 "strategy": "timestamp",
+#                 "updated_at": "updated_at",
+#             },
+#         },
+#         "macro-paths": ["macros"],
+#     }
 
 
-def setUp(self):
-    super().setUp()
-    self._created_schemas.add(
-        self._get_schema_fqn(self.default_database, self.target_schema()),
-    )
+# NUM_SNAPSHOT_MODELS = 1
 
 
-def schema(self):
-    return "simple_snapshot_004"
+# def setUp(self):
+#     super().setUp()
+#     self._created_schemas.add(
+#         self._get_schema_fqn(self.default_database, self.target_schema()),
+#     )
 
 
-def models(self):
-    return "models"
+# def schema(self):
+#     return "simple_snapshot_004"
 
 
-def project_config(self):
-    paths = ["snapshots-pg"]
-    return {
-        "config-version": 2,
-        "snapshot-paths": paths,
-        "macro-paths": ["macros"],
-    }
+# def models(self):
+#     return "models"
 
 
-def target_schema(self):
-    return "{}_snapshotted".format(self.unique_schema())
+# def project_config(self):
+#     paths = ["snapshots-pg"]
+#     return {
+#         "config-version": 2,
+#         "snapshot-paths": paths,
+#         "macro-paths": ["macros"],
+#     }
 
 
-def run_snapshot(self):
-    return self.run_dbt(
-        ["snapshot", "--vars", '{{"target_schema": {}}}'.format(self.target_schema())]
-    )
+# def target_schema(self):
+#     return "{}_snapshotted".format(self.unique_schema())
 
 
-def test__postgres__cross_schema_snapshot(self):
-    self.run_sql_file("seed_pg.sql")
+# def run_snapshot(self):
+#     return self.run_dbt(
+#         ["snapshot", "--vars", '{{"target_schema": {}}}'.format(self.target_schema())]
+#     )
 
-    results = self.run_snapshot()
-    assert len(results) == self.NUM_SNAPSHOT_MODELS
 
-    results = self.run_dbt(
-        ["run", "--vars", '{{"target_schema": {}}}'.format(self.target_schema())]
-    )
-    assert len(results) == 1
+# def test__postgres__cross_schema_snapshot(self):
+#     self.run_sql_file("seed_pg.sql")
+
+#     results = self.run_snapshot()
+#     assert len(results) == self.NUM_SNAPSHOT_MODELS
+
+#     results = self.run_dbt(
+#         ["run", "--vars", '{{"target_schema": {}}}'.format(self.target_schema())]
+#     )
+#     assert len(results) == 1
 
 
 def schema(self):

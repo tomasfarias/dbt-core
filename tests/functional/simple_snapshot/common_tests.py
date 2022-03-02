@@ -34,7 +34,6 @@ def basic_snapshot_test(project):
     assert len(results) == 1
 
     run_dbt(["test"])
-    breakpoint()
     table_comp.assert_tables_equal("snapshot_actual", "snapshot_expected")
 
 

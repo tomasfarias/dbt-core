@@ -49,7 +49,7 @@ from dbt.exceptions import (
     warn_invalid_patch,
     validator_error_message,
     JSONValidationException,
-    raise_invalid_schema_yml_version,
+    raise_invalid_property_yml_version,
     ValidationException,
     ParsingException,
     raise_duplicate_patch_name,
@@ -94,7 +94,10 @@ schema_file_keys = (
 
 
 def error_context(
-    path: str, key: str, data: Any, cause: Union[str, ValidationException, JSONValidationException]
+    path: str,
+    key: str,
+    data: Any,
+    cause: Union[str, ValidationException, JSONValidationException],
 ) -> str:
     """Provide contextual information about an error while parsing"""
     if isinstance(cause, str):
@@ -544,15 +547,19 @@ class SchemaParser(SimpleParser[GenericTestBlock, ParsedGenericTestNode]):
 
 def check_format_version(file_path, yaml_dct) -> None:
     if "version" not in yaml_dct:
-        raise_invalid_schema_yml_version(file_path, "no version is specified")
+        raise_invalid_property_yml_version(file_path, "no version is specified")
 
     version = yaml_dct["version"]
     # if it's not an integer, the version is malformed, or not
     # set. Either way, only 'version: 2' is supported.
     if not isinstance(version, int):
-        raise_invalid_schema_yml_version(file_path, "the version is not an integer")
+        raise_invalid_property_yml_version(
+            file_path, "the version must be an integer. {} is not an integer".format(version)
+        )
     if version != 2:
-        raise_invalid_schema_yml_version(file_path, "version {} is not supported".format(version))
+        raise_invalid_property_yml_version(
+            file_path, "version {} is unsupported for property files".format(version)
+        )
 
 
 Parsed = TypeVar("Parsed", UnpatchedSourceDefinition, ParsedNodePatch, ParsedMacroPatch)

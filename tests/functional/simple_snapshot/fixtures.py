@@ -2,69 +2,69 @@ import pytest
 from dbt.tests.fixtures.project import write_project_files
 
 
-# snapshots_select__snapshot_sql = """
-# {% snapshot snapshot_castillo %}
+snapshots_select__snapshot_sql = """
+{% snapshot snapshot_castillo %}
 
-#     {{
-#         config(
-#             target_database=var('target_database', database),
-#             target_schema=schema,
-#             unique_key='id || ' ~ "'-'" ~ ' || first_name',
-#             strategy='timestamp',
-#             updated_at='"1-updated_at"',
-#         )
-#     }}
-#     select id,first_name,last_name,email,gender,ip_address,updated_at as "1-updated_at" from {{target.database}}.{{schema}}.seed where last_name = 'Castillo'
+    {{
+        config(
+            target_database=var('target_database', database),
+            target_schema=schema,
+            unique_key='id || ' ~ "'-'" ~ ' || first_name',
+            strategy='timestamp',
+            updated_at='"1-updated_at"',
+        )
+    }}
+    select id,first_name,last_name,email,gender,ip_address,updated_at as "1-updated_at" from {{target.database}}.{{schema}}.seed where last_name = 'Castillo'
 
-# {% endsnapshot %}
+{% endsnapshot %}
 
-# {% snapshot snapshot_alvarez %}
+{% snapshot snapshot_alvarez %}
 
-#     {{
-#         config(
-#             target_database=var('target_database', database),
-#             target_schema=schema,
-#             unique_key='id || ' ~ "'-'" ~ ' || first_name',
-#             strategy='timestamp',
-#             updated_at='updated_at',
-#         )
-#     }}
-#     select * from {{target.database}}.{{schema}}.seed where last_name = 'Alvarez'
+    {{
+        config(
+            target_database=var('target_database', database),
+            target_schema=schema,
+            unique_key='id || ' ~ "'-'" ~ ' || first_name',
+            strategy='timestamp',
+            updated_at='updated_at',
+        )
+    }}
+    select * from {{target.database}}.{{schema}}.seed where last_name = 'Alvarez'
 
-# {% endsnapshot %}
+{% endsnapshot %}
 
 
-# {% snapshot snapshot_kelly %}
-#     {# This has no target_database set, which is allowed! #}
-#     {{
-#         config(
-#             target_schema=schema,
-#             unique_key='id || ' ~ "'-'" ~ ' || first_name',
-#             strategy='timestamp',
-#             updated_at='updated_at',
-#         )
-#     }}
-#     select * from {{target.database}}.{{schema}}.seed where last_name = 'Kelly'
+{% snapshot snapshot_kelly %}
+    {# This has no target_database set, which is allowed! #}
+    {{
+        config(
+            target_schema=schema,
+            unique_key='id || ' ~ "'-'" ~ ' || first_name',
+            strategy='timestamp',
+            updated_at='updated_at',
+        )
+    }}
+    select * from {{target.database}}.{{schema}}.seed where last_name = 'Kelly'
 
-# {% endsnapshot %}
-# """
+{% endsnapshot %}
+"""
 
-# snapshots_pg_custom__snapshot_sql = """
-# {% snapshot snapshot_actual %}
+snapshots_pg_custom__snapshot_sql = """
+{% snapshot snapshot_actual %}
 
-#     {{
-#         config(
-#             target_database=var('target_database', database),
-#             target_schema=var('target_schema', schema),
-#             unique_key='id || ' ~ "'-'" ~ ' || first_name',
-#             strategy='custom',
-#             updated_at='updated_at',
-#         )
-#     }}
-#     select * from {{target.database}}.{{target.schema}}.seed
+    {{
+        config(
+            target_database=var('target_database', database),
+            target_schema=var('target_schema', schema),
+            unique_key='id || ' ~ "'-'" ~ ' || first_name',
+            strategy='custom',
+            updated_at='updated_at',
+        )
+    }}
+    select * from {{target.database}}.{{target.schema}}.seed
 
-# {% endsnapshot %}
-# """
+{% endsnapshot %}
+"""
 
 
 # models_collision__snapshot_actual_sql = """
@@ -462,22 +462,22 @@ id,first_name
 # {% endsnapshot %}
 # """
 
-# snapshots_pg_custom_namespaced__snapshot_sql = """
-# {% snapshot snapshot_actual %}
+snapshots_pg_custom_namespaced__snapshot_sql = """
+{% snapshot snapshot_actual %}
 
-#     {{
-#         config(
-#             target_database=var('target_database', database),
-#             target_schema=var('target_schema', schema),
-#             unique_key='id || ' ~ "'-'" ~ ' || first_name',
-#             strategy='test.custom',
-#             updated_at='updated_at',
-#         )
-#     }}
-#     select * from {{target.database}}.{{target.schema}}.seed
+    {{
+        config(
+            target_database=var('target_database', database),
+            target_schema=var('target_schema', schema),
+            unique_key='id || ' ~ "'-'" ~ ' || first_name',
+            strategy='test.custom',
+            updated_at='updated_at',
+        )
+    }}
+    select * from {{target.database}}.{{target.schema}}.seed
 
-# {% endsnapshot %}
-# """
+{% endsnapshot %}
+"""
 
 snapshots_pg__snapshot_sql = """
 {% snapshot snapshot_actual %}
@@ -577,14 +577,17 @@ snapshots_pg__snapshot_sql = """
 # """
 
 
-# @pytest.fixture
-# def snapshots_select():
-#     return {"snapshot.sql": snapshots_select__snapshot_sql}
+@pytest.fixture
+def snapshots_select():
+    return {
+        "snapshot.sql": snapshots_pg__snapshot_sql,
+        "snapshot_select.sql": snapshots_select__snapshot_sql,
+    }
 
 
-# @pytest.fixture
-# def snapshots_pg_custom():
-#     return {"snapshot.sql": snapshots_pg_custom__snapshot_sql}
+@pytest.fixture
+def snapshots_pg_custom():
+    return {"snapshot.sql": snapshots_pg_custom__snapshot_sql}
 
 
 # @pytest.fixture
@@ -594,7 +597,10 @@ snapshots_pg__snapshot_sql = """
 
 @pytest.fixture
 def macros_custom_snapshot():
-    return {"custom.sql": macros_custom_snapshot__custom_sql}
+    return {
+        "test_no_overlaps.sql": macros__test_no_overlaps_sql,
+        "custom.sql": macros_custom_snapshot__custom_sql,
+    }
 
 
 # @pytest.fixture
@@ -660,9 +666,9 @@ def seeds():
 #     return {"snapshot.sql": snapshots_checkall__snapshot_sql}
 
 
-# @pytest.fixture
-# def snapshots_pg_custom_namespaced():
-#     return {"snapshot.sql": snapshots_pg_custom_namespaced__snapshot_sql}
+@pytest.fixture
+def snapshots_pg_custom_namespaced():
+    return {"snapshot.sql": snapshots_pg_custom_namespaced__snapshot_sql}
 
 
 @pytest.fixture
@@ -688,8 +694,8 @@ def snapshots_pg():
 @pytest.fixture
 def project_files(
     project_root,
-    #     snapshots_select,
-    #     snapshots_pg_custom,
+    snapshots_select,
+    snapshots_pg_custom,
     #     models_collision,
     macros_custom_snapshot,
     #     test_snapshots_slow,
@@ -704,14 +710,14 @@ def project_files(
     seeds,
     #     snapshots_changing_strategy,
     #     snapshots_checkall,
-    #     snapshots_pg_custom_namespaced,
+    snapshots_pg_custom_namespaced,
     snapshots_pg,
     #     models_slow,
     #     snapshots_longtext,
     #     snapshots_check_col_noconfig,
 ):
-    #     write_project_files(project_root, "snapshots-select", snapshots_select)
-    #     write_project_files(project_root, "snapshots-pg-custom", snapshots_pg_custom)
+    write_project_files(project_root, "snapshots-select", snapshots_select)
+    write_project_files(project_root, "snapshots-pg-custom", snapshots_pg_custom)
     #     write_project_files(project_root, "models-collision", models_collision)
     write_project_files(project_root, "macros-custom-snapshot", macros_custom_snapshot)
     #     write_project_files(project_root, "test-snapshots-slow", test_snapshots_slow)
@@ -736,9 +742,9 @@ def project_files(
     #         project_root, "snapshots-changing-strategy", snapshots_changing_strategy
     #     )
     #     write_project_files(project_root, "snapshots-checkall", snapshots_checkall)
-    #     write_project_files(
-    #         project_root, "snapshots-pg-custom-namespaced", snapshots_pg_custom_namespaced
-    #     )
+    write_project_files(
+        project_root, "snapshots-pg-custom-namespaced", snapshots_pg_custom_namespaced
+    )
     write_project_files(project_root, "snapshots-pg", snapshots_pg)
 
 

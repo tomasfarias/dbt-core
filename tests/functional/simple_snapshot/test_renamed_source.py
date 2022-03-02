@@ -1,26 +1,11 @@
 import pytest
 from dbt.tests.util import run_dbt
-from tests.functional.simple_snapshot.fixtures import seeds, macros, macros_custom_snapshot  # noqa
+from tests.functional.simple_snapshot.fixtures import seeds, macros_custom_snapshot  # noqa: F401
 
-# @property
-# def models(self):
-#     return "models-checkall"
-
-# @property
-# def project_config(self):
-#     return {
-#         'config-version': 2,
-#         'seed-paths': ['seeds'],
-#         'macro-paths': ['macros-custom-snapshot', 'macros'],
-#         'snapshot-paths': ['snapshots-checkall'],
-#         'seeds': {
-#             'quote_columns': False,
-#         }
-#     }
 
 snapshots_checkall__snapshot_sql = """
 {% snapshot my_snapshot %}
-    {{ config(check_cols='all', unique_key='id', strategy='check', target_database=var('database', 'dbt'), target_schema=var('schema', 'schema')) }}
+    {{ config(check_cols='all', unique_key='id', strategy='check', target_database=database, target_schema=schema) }}
     select * from {{ ref(var('seed_name', 'seed')) }}
 {% endsnapshot %}
 """
@@ -31,22 +16,18 @@ def snapshots():
     return {"snapshot.sql": snapshots_checkall__snapshot_sql}
 
 
-# @pytest.fixture
-# def seeds(seeds):
-#     return seeds
-
-
 @pytest.fixture
-def macros(macros, macros_custom_snapshot):  # noqa
-    return macros.update(macros_custom_snapshot)
+def macros(macros_custom_snapshot):  # noqa: F811
+    return macros_custom_snapshot
 
 
 def test_renamed_source(project):
     run_dbt(["seed"])
-    run_dbt(["snapshot", "--vars", f"{{schema: {project.test_schema}}}"])
-    breakpoint()
+    run_dbt(["snapshot"])
+    breakpoint()  # TODO: not sure why but the seeds don't get an ID - come back later.
+    database = project.database
     results = project.run_sql(
-        "select * from {}.{}.my_snapshot".format(project.database, project.test_schema),
+        "select * from {}.{}.my_snapshot".format(database, project.test_schema),
         fetch="all",
     )
     assert len(results) == 3
@@ -58,7 +39,7 @@ def test_renamed_source(project):
     run_dbt(["snapshot", "--vars", "{seed_name: seed_newcol}"])
     results = project.run_sql(
         "select * from {}.{}.my_snapshot where last_name is not NULL".format(
-            project.database, project.test_schema
+            database, project.test_schema
         ),
         fetch="all",
     )
@@ -71,7 +52,7 @@ def test_renamed_source(project):
 
     results = project.run_sql(
         "select * from {}.{}.my_snapshot where last_name is NULL".format(
-            project.database, project.test_schema
+            database, project.test_schema
         ),
         fetch="all",
     )

@@ -313,28 +313,28 @@ def project_config(self):
 #     )
 #     assert len(results) == 1
 
-
-def schema(self):
-    return "simple_snapshot_004"
-
-
-def models(self):
-    return "models"
+# test_missing_strategy.py
+# def schema(self):
+#     return "simple_snapshot_004"
 
 
-def project_config(self):
-    return {
-        "config-version": 2,
-        "snapshot-paths": ["snapshots-invalid"],
-        "macro-paths": ["macros"],
-    }
+# def models(self):
+#     return "models"
 
 
-def test__postgres__invalid(self):
-    with pytest.raises(dbt.exceptions.ParsingException) as exc:
-        self.run_dbt(["compile"], expect_pass=False)
+# def project_config(self):
+#     return {
+#         "config-version": 2,
+#         "snapshot-paths": ["snapshots-invalid"],
+#         "macro-paths": ["macros"],
+#     }
 
-    assert "Snapshots must be configured with a 'strategy'" in str(exc.exception)
+
+# def test__postgres__invalid(self):
+#     with pytest.raises(dbt.exceptions.ParsingException) as exc:
+#         self.run_dbt(["compile"], expect_pass=False)
+
+#     assert "Snapshots must be configured with a 'strategy'" in str(exc.exception)
 
 
 NUM_SNAPSHOT_MODELS = 2

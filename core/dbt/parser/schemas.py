@@ -557,7 +557,8 @@ def check_format_version(file_path, yaml_dct) -> None:
     if not isinstance(version, int):
         raise_invalid_property_yml_version(
             file_path,
-            "its 'version:' tag must be an integer value. {} is not an integer".format(version),
+            "its 'version:' tag must be an integer (e.g. version: 2)."
+            " {} is not an integer".format(version),
         )
     if version != 2:
         raise_invalid_property_yml_version(

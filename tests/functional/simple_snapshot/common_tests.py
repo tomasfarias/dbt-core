@@ -1,5 +1,4 @@
 import os
-import pytest
 from dbt.tests.util import run_dbt
 from dbt.tests.tables import TableComparison
 
@@ -7,7 +6,6 @@ from dbt.tests.tables import TableComparison
 NUM_SNAPSHOT_MODELS = 1
 
 
-@pytest.fixture
 def basic_snapshot_test(project):
     """
     This exact test is run multiple times with various macors/tests/snapshots
@@ -37,7 +35,6 @@ def basic_snapshot_test(project):
     table_comp.assert_tables_equal("snapshot_actual", "snapshot_expected")
 
 
-@pytest.fixture
 def basic_ref_test(project):
     path = os.path.join(project.test_data_dir, "seed_pg.sql")
     project.run_sql_file(path)

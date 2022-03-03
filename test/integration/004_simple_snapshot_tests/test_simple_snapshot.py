@@ -67,96 +67,96 @@ class BaseSimpleSnapshotTest(DBTIntegrationTest):
 #         self.assert_expected()
 
 
-class TestSimpleColumnSnapshotFiles(DBTIntegrationTest):
+# class TestSimpleColumnSnapshotFiles(DBTIntegrationTest):
 
-    @property
-    def schema(self):
-        return "simple_snapshot_004"
+#     @property
+#     def schema(self):
+#         return "simple_snapshot_004"
 
-    @property
-    def models(self):
-        return "models-checkall"
+#     @property
+#     def models(self):
+#         return "models-checkall"
 
-    @property
-    def project_config(self):
-        return {
-            'config-version': 2,
-            'seed-paths': ['seeds'],
-            'macro-paths': ['macros-custom-snapshot', 'macros'],
-            'snapshot-paths': ['snapshots-checkall'],
-            'seeds': {
-                'quote_columns': False,
-            }
-        }
+#     @property
+#     def project_config(self):
+#         return {
+#             'config-version': 2,
+#             'seed-paths': ['seeds'],
+#             'macro-paths': ['macros-custom-snapshot', 'macros'],
+#             'snapshot-paths': ['snapshots-checkall'],
+#             'seeds': {
+#                 'quote_columns': False,
+#             }
+#         }
 
-    def _run_snapshot_test(self):
-        self.run_dbt(['seed'])
-        self.run_dbt(['snapshot'])
-        breakpoint()
-        database = self.default_database
-        results = self.run_sql(
-            'select * from {}.{}.my_snapshot'.format(database, self.unique_schema()),
-            fetch='all'
-        )
-        self.assertEqual(len(results), 3)
-        for result in results:
-            self.assertEqual(len(result), 6)
+#     def _run_snapshot_test(self):
+#         self.run_dbt(['seed'])
+#         self.run_dbt(['snapshot'])
+#         breakpoint()
+#         database = self.default_database
+#         results = self.run_sql(
+#             'select * from {}.{}.my_snapshot'.format(database, self.unique_schema()),
+#             fetch='all'
+#         )
+#         self.assertEqual(len(results), 3)
+#         for result in results:
+#             self.assertEqual(len(result), 6)
 
-        self.run_dbt(['snapshot', '--vars', '{seed_name: seed_newcol}'])
-        results = self.run_sql(
-            'select * from {}.{}.my_snapshot where last_name is not NULL'.format(database, self.unique_schema()),
-            fetch='all'
-        )
-        self.assertEqual(len(results), 3)
+#         self.run_dbt(['snapshot', '--vars', '{seed_name: seed_newcol}'])
+#         results = self.run_sql(
+#             'select * from {}.{}.my_snapshot where last_name is not NULL'.format(database, self.unique_schema()),
+#             fetch='all'
+#         )
+#         self.assertEqual(len(results), 3)
 
-        for result in results:
-            # new column
-            self.assertEqual(len(result), 7)
-            self.assertIsNotNone(result[-1])
+#         for result in results:
+#             # new column
+#             self.assertEqual(len(result), 7)
+#             self.assertIsNotNone(result[-1])
 
-        results = self.run_sql(
-            'select * from {}.{}.my_snapshot where last_name is NULL'.format(database, self.unique_schema()),
-            fetch='all'
-        )
-        self.assertEqual(len(results), 3)
-        for result in results:
-            # new column
-            self.assertEqual(len(result), 7)
+#         results = self.run_sql(
+#             'select * from {}.{}.my_snapshot where last_name is NULL'.format(database, self.unique_schema()),
+#             fetch='all'
+#         )
+#         self.assertEqual(len(results), 3)
+#         for result in results:
+#             # new column
+#             self.assertEqual(len(result), 7)
 
-    @use_profile('postgres')
-    def test_postgres_renamed_source(self):
-        self._run_snapshot_test()
+#     @use_profile('postgres')
+#     def test_postgres_renamed_source(self):
+#         self._run_snapshot_test()
 
 
-class TestCustomSnapshotFiles(BaseSimpleSnapshotTest):
-    @property
-    def project_config(self):
-        return {
-            'config-version': 2,
-            'seed-paths': ['seeds'],
-            'macro-paths': ['macros-custom-snapshot', 'macros'],
-            'snapshot-paths': ['snapshots-pg-custom'],
-        }
+# class TestCustomSnapshotFiles(BaseSimpleSnapshotTest):
+#     @property
+#     def project_config(self):
+#         return {
+#             'config-version': 2,
+#             'seed-paths': ['seeds'],
+#             'macro-paths': ['macros-custom-snapshot', 'macros'],
+#             'snapshot-paths': ['snapshots-pg-custom'],
+#         }
 
-    @use_profile('postgres')
-    def test__postgres_ref_snapshot(self):
-        self.dbt_run_seed_snapshot()
-        results = self.run_dbt(['run'])
-        self.assertEqual(len(results), 1)
+#     @use_profile('postgres')
+#     def test__postgres_ref_snapshot(self):
+#         self.dbt_run_seed_snapshot()
+#         results = self.run_dbt(['run'])
+#         self.assertEqual(len(results), 1)
 
-    @use_profile('postgres')
-    def test__postgres__simple_custom_snapshot(self):
-        self.dbt_run_seed_snapshot()
+#     @use_profile('postgres')
+#     def test__postgres__simple_custom_snapshot(self):
+#         self.dbt_run_seed_snapshot()
 
-        self.assert_expected()
+#         self.assert_expected()
 
-        self.run_sql_file("invalidate_postgres.sql")
-        self.run_sql_file("update.sql")
+#         self.run_sql_file("invalidate_postgres.sql")
+#         self.run_sql_file("update.sql")
 
-        results = self.run_snapshot()
-        self.assertEqual(len(results),  self.NUM_SNAPSHOT_MODELS)
+#         results = self.run_snapshot()
+#         self.assertEqual(len(results),  self.NUM_SNAPSHOT_MODELS)
 
-        self.assert_expected()
+#         self.assert_expected()
 
 
 class TestNamespacedCustomSnapshotFiles(BaseSimpleSnapshotTest):

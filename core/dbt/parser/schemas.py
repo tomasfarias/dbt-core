@@ -547,18 +547,22 @@ class SchemaParser(SimpleParser[GenericTestBlock, ParsedGenericTestNode]):
 
 def check_format_version(file_path, yaml_dct) -> None:
     if "version" not in yaml_dct:
-        raise_invalid_property_yml_version(file_path, "no version is specified")
+        raise_invalid_property_yml_version(
+            file_path,
+            "the yml property file {} is missing a version tag".format(file_path)
+        )
 
     version = yaml_dct["version"]
     # if it's not an integer, the version is malformed, or not
     # set. Either way, only 'version: 2' is supported.
     if not isinstance(version, int):
         raise_invalid_property_yml_version(
-            file_path, "the version must be an integer. {} is not an integer".format(version)
+            file_path,
+            "its 'version:' tag must be an integer value. {} is not an integer".format(version)
         )
     if version != 2:
         raise_invalid_property_yml_version(
-            file_path, "version {} is unsupported for property files".format(version)
+            file_path, "its 'version:' tag is set to {}. Only 2 is supported".format(version)
         )
 
 

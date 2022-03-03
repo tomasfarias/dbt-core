@@ -66,13 +66,13 @@ class RefSetup:
 
 # all of the tests below use one of both of the above tests with
 # various combinations of snapshots and macros
-class TestBasic(BasicSetup, RefSetup):  # test_basic.py
+class TestBasic(BasicSetup, RefSetup):
     @pytest.fixture
     def snapshots(self, snapshots_pg):  # noqa: F811
         return snapshots_pg
 
 
-class TestCustomNamespace(BasicSetup):  # test_custom_namespace.py
+class TestCustomNamespace(BasicSetup):
     @pytest.fixture
     def snapshots(self, snapshots_pg_custom_namespaced):  # noqa: F811
         return snapshots_pg_custom_namespaced
@@ -82,7 +82,7 @@ class TestCustomNamespace(BasicSetup):  # test_custom_namespace.py
         return macros_custom_snapshot
 
 
-class TestCustomSnapshot(BasicSetup, RefSetup):  # test_custom_snapshot.py
+class TestCustomSnapshot(BasicSetup, RefSetup):
     @pytest.fixture
     def snapshots(self, snapshots_pg_custom):  # noqa: F811
         return snapshots_pg_custom

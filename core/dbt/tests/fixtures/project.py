@@ -63,44 +63,54 @@ def test_data_dir(request):
     return os.path.join(request.fspath.dirname, "data")
 
 
-# Maybe this doesn't need to be a separate fixture?
-@pytest.fixture(scope="session")
-def database_host():
-    return os.environ.get("DOCKER_TEST_DATABASE_HOST", "localhost")
+def postgres_target():
+    return {
+        "type": "postgres",
+        "threads": 4,
+        "host": "localhost",
+        "port": int(os.getenv("POSTGRES_TEST_PORT", 5432)),
+        "user": os.getenv("POSTGRES_TEST_USER", "root"),
+        "pass": os.getenv("POSTGRES_TEST_PASS", "password"),
+        "dbname": os.getenv("POSTGRES_TEST_DATABASE", "dbt")
+    }
 
+def redshift_target():
+    return {
+        'type': 'redshift',
+        'threads': 1,
+        'host': os.getenv('REDSHIFT_TEST_HOST'),
+        'port': int(os.getenv('REDSHIFT_TEST_PORT')),
+        'user': os.getenv('REDSHIFT_TEST_USER'),
+        'pass': os.getenv('REDSHIFT_TEST_PASS'),
+        'dbname': os.getenv('REDSHIFT_TEST_DBNAME'),
+    }
 
 # The profile dictionary, used to write out profiles.yml
 @pytest.fixture
-def dbt_profile_data(unique_schema, database_host):
+def dbt_profile_data(unique_schema, request):
+    print(f"--- in dbt_profile_data. {request.config.getoption('--adapter')}")
     dbname = os.getenv("POSTGRES_TEST_DATABASE", "dbt")
-    return {
+    profile = {
         "config": {"send_anonymous_usage_stats": False},
         "test": {
             "outputs": {
-                "default": {
-                    "type": "postgres",
-                    "threads": 4,
-                    "host": database_host,
-                    "port": int(os.getenv("POSTGRES_TEST_PORT", 5432)),
-                    "user": os.getenv("POSTGRES_TEST_USER", "root"),
-                    "pass": os.getenv("POSTGRES_TEST_PASS", "password"),
-                    "dbname": dbname,
-                    "schema": unique_schema,
-                },
-                "other_schema": {
-                    "type": "postgres",
-                    "threads": 4,
-                    "host": database_host,
-                    "port": int(os.getenv("POSTGRES_TEST_PORT", 5432)),
-                    "user": "noaccess",
-                    "pass": "password",
-                    "dbname": dbname,
-                    "schema": unique_schema + "_alt",  # Should this be the same unique_schema?
-                },
+                "default": {},
             },
             "target": "default",
         },
     }
+    adapter_type = request.config.getoption("--adapter")
+    target = {}
+    if adapter_type == 'postgres':
+        target = postgres_target()
+    elif adapter_type == 'redshift':
+        target = redshift_target()
+
+    target["schema"] = unique_schema
+    profile["test"]["outputs"]["default"] = target
+    print(f"--- profile: {profile}")
+    return profile
+
 
 
 # Write out the profile data as a yaml file

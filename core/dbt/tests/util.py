@@ -41,7 +41,7 @@ def run_dbt_and_capture(args: List[str] = None, expect_pass=True):
 
 # Used in test cases to get the manifest from the partial parsing file
 def get_manifest(project_root):
-    path = project_root.join("target", "partial_parse.msgpack")
+    path = os.path.join(project_root, "target", "partial_parse.msgpack")
     if os.path.exists(path):
         with open(path, "rb") as fp:
             manifest_mp = fp.read()

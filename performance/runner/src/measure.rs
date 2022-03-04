@@ -181,7 +181,7 @@ pub fn model<'a>(
     out_dir: &PathBuf,
     tmp_dir: &PathBuf,
     n_runs: i32,
-) -> Result<Baseline, RunnerError> {
+) -> Result<Vec<Baseline>, RunnerError> {
     for (path, project_name, hcmd) in get_projects(projects_directory)? {
         let metric = Metric {
             name: hcmd.name.to_owned(),
@@ -205,10 +205,14 @@ pub fn model<'a>(
     let measurements: Vec<(PathBuf, Measurements)> = from_json_files::<Measurements>(tmp_dir)?;
 
     // put it in the right format using the same timestamp for every model.
-    let baseline = from_measurements(version, &measurements, Some(Utc::now()))?;
+    let now = Utc::now();
+    let baselines: Vec<Baseline> = measurements
+        .into_iter()
+        .map(|m| from_measurement(version, m, Some(now)))
+        .collect::<Result<Vec<Baseline>>, RunnerError>()?;
 
     // write a file for each baseline measurement
-    for model in &baseline.models {
+    for model in &baselines {
         // create the correct filename like `/out_dir/1.0.0/parse___2000_models.json`
         let mut out_file = out_dir.clone();
         out_file.push(version.to_string());
@@ -235,33 +239,30 @@ pub fn model<'a>(
     Ok(baseline)
 }
 
-fn from_measurements(
+fn from_measurement(
     version: Version,
-    measurements: &[(PathBuf, Measurements)],
+    measurement: (PathBuf, Measurements),
     ts: Option<DateTime<Utc>>,
 ) -> Result<Baseline, RunnerError> {
-    let models: Vec<MetricModel> = measurements
-        .into_iter()
-        .map(|(path, measurements)| {
-            // TODO fix unwraps
-            // `file_name` is boop___proj.json. `file_stem` is boop___proj.
-            let filename = path.file_stem().unwrap();
-            let metric = Metric::from_str(&filename.to_string_lossy()).unwrap();
-            MetricModel {
-                metric: metric,
-                // uses the provided timestamp for every entry, or the current time if None.
-                ts: ts.unwrap_or(Utc::now()),
-                measurement: measurements.results[0].clone(),
-            }
-        })
-        .collect();
-
-    if models.is_empty() {
-        Err(RunnerError::BaselineWithNoModelsErr())
-    } else {
-        Ok(Baseline {
-            version: version,
-            models: models,
-        })
+    let (path, measurements) = measurement;
+    // TODO fix unwraps
+    // `file_name` is boop___proj.json. `file_stem` is boop___proj.
+    let filename = path.file_stem().unwrap();
+    let metric = Metric::from_str(&filename.to_string_lossy()).unwrap();
+    Baseline {
+        version: version,
+        metric: metric,
+        // uses the provided timestamp for every entry, or the current time if None.
+        ts: ts.unwrap_or(Utc::now()),
+        measurement: measurements.results[0],
     }
+
+    // if models.is_empty() {
+    //     Err(RunnerError::BaselineWithNoModelsErr())
+    // } else {
+    //     Ok(Baseline {
+    //         version: version,
+    //         models: models,
+    //     })
+    // }
 }

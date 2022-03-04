@@ -2,7 +2,7 @@ use crate::exceptions::RunnerError;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::{DeserializeFromStr, SerializeDisplay};
-use std::fmt;
+use std::{cmp, fmt};
 use std::fmt::Display;
 use std::str::FromStr;
 
@@ -114,19 +114,20 @@ impl Version {
 }
 
 // A model for a single project-command pair
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct MetricModel {
+// modeling a version at release time will populate a directory with many of these
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, PartialOrd, Eq)]
+pub struct Baseline {
+    pub version: Version,
     pub metric: Metric,
     pub ts: DateTime<Utc>,
     pub measurement: Measurement,
 }
 
-// A JSON structure outputted by the release process that contains
-// a models for all the measured project-command pairs for this version.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Baseline {
-    pub version: Version,
-    pub models: Vec<MetricModel>,
+
+impl Ord for Baseline {
+    fn cmp(&self, other: &Self) -> cmp::Ordering {
+        self.version.cmp(other.version)
+    }
 }
 
 // A JSON structure outputted by the release process that contains

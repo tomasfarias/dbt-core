@@ -6,23 +6,21 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 // TODO find an alternative to all this cloning
-fn calculate_regressions(samples: &[Sample], baseline: Baseline, sigma: f64) -> Vec<Calculation> {
+fn calculate_regressions(samples: &[Sample], baselines: &[Baseline], sigma: f64) -> Vec<Calculation> {
     let m_samples: HashMap<Metric, (f64, DateTime<Utc>)> = samples
         .into_iter()
         .map(|x| (x.metric.clone(), (x.value, x.ts)))
         .collect();
 
-    baseline
-        .models
-        .clone()
+    baselines
         .into_iter()
-        .filter_map(|metric_model| {
-            let model = metric_model.measurement.clone();
-            m_samples.get(&metric_model.metric).map(|(value, ts)| {
+        .filter_map(|baseline| {
+            let model = baseline.measurement.clone();
+            m_samples.get(&baseline.metric).map(|(value, ts)| {
                 let threshold = model.mean + sigma * model.stddev;
                 Calculation {
                     version: baseline.version,
-                    metric: metric_model.metric,
+                    metric: baseline.metric,
                     regression: *value > threshold,
                     ts: *ts,
                     sigma: sigma,
@@ -43,26 +41,16 @@ pub fn regressions(
     projects_dir: &PathBuf,
     tmp_dir: &PathBuf,
 ) -> Result<Vec<Calculation>, RunnerError> {
+    // TODO right now we're assuming this path is pointing to the versioned sub directory. that logic hasn't been written yet.
     let baselines: Vec<Baseline> = measure::from_json_files::<Baseline>(Path::new(&baseline_dir))?
         .into_iter()
         .map(|(_, x)| x)
         .collect();
+
     let samples: Vec<Sample> = measure::take_samples(projects_dir, tmp_dir)?;
 
-    // this is the baseline to compare these samples against
-    let baseline: Baseline = match &baselines[..] {
-        [] => panic!("no baselines found in dir"),
-        [x, ..] => baselines.clone().into_iter().fold(x.clone(), |max, next| {
-            if max.version >= next.version {
-                max
-            } else {
-                next
-            }
-        }),
-    };
-
     // calculate regressions with a 3 sigma threshold
-    Ok(calculate_regressions(&samples, baseline, 3.0))
+    Ok(calculate_regressions(&samples, &baselines, 3.0))
 }
 
 #[cfg(test)]

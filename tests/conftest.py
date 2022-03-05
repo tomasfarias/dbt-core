@@ -3,10 +3,6 @@
 
 pytest_plugins = ["dbt.tests.fixtures.project"]
 
+
 def pytest_addoption(parser):
-    parser.addoption(
-        "--adapter",
-        action = "store",
-        default = "postgres",
-        type = str
-    )
+    parser.addoption("--adapter", action="store", default="postgres", type=str)

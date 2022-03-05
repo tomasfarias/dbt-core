@@ -71,25 +71,25 @@ def postgres_target():
         "port": int(os.getenv("POSTGRES_TEST_PORT", 5432)),
         "user": os.getenv("POSTGRES_TEST_USER", "root"),
         "pass": os.getenv("POSTGRES_TEST_PASS", "password"),
-        "dbname": os.getenv("POSTGRES_TEST_DATABASE", "dbt")
+        "dbname": os.getenv("POSTGRES_TEST_DATABASE", "dbt"),
     }
+
 
 def redshift_target():
     return {
-        'type': 'redshift',
-        'threads': 1,
-        'host': os.getenv('REDSHIFT_TEST_HOST'),
-        'port': int(os.getenv('REDSHIFT_TEST_PORT')),
-        'user': os.getenv('REDSHIFT_TEST_USER'),
-        'pass': os.getenv('REDSHIFT_TEST_PASS'),
-        'dbname': os.getenv('REDSHIFT_TEST_DBNAME'),
+        "type": "redshift",
+        "threads": 1,
+        "host": os.getenv("REDSHIFT_TEST_HOST"),
+        "port": int(os.getenv("REDSHIFT_TEST_PORT")),
+        "user": os.getenv("REDSHIFT_TEST_USER"),
+        "pass": os.getenv("REDSHIFT_TEST_PASS"),
+        "dbname": os.getenv("REDSHIFT_TEST_DBNAME"),
     }
+
 
 # The profile dictionary, used to write out profiles.yml
 @pytest.fixture
 def dbt_profile_data(unique_schema, request):
-    print(f"--- in dbt_profile_data. {request.config.getoption('--adapter')}")
-    dbname = os.getenv("POSTGRES_TEST_DATABASE", "dbt")
     profile = {
         "config": {"send_anonymous_usage_stats": False},
         "test": {
@@ -101,16 +101,14 @@ def dbt_profile_data(unique_schema, request):
     }
     adapter_type = request.config.getoption("--adapter")
     target = {}
-    if adapter_type == 'postgres':
+    if adapter_type == "postgres":
         target = postgres_target()
-    elif adapter_type == 'redshift':
+    elif adapter_type == "redshift":
         target = redshift_target()
 
     target["schema"] = unique_schema
     profile["test"]["outputs"]["default"] = target
-    print(f"--- profile: {profile}")
     return profile
-
 
 
 # Write out the profile data as a yaml file

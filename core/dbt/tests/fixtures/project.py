@@ -63,6 +63,16 @@ def test_data_dir(request):
     return os.path.join(request.fspath.dirname, "data")
 
 
+@pytest.fixture
+def dbt_profile_target(request):
+    adapter_type = request.config.getoption("--adapter")
+    if adapter_type == "redshift":
+        target = redshift_target()
+    else:  # default is postgres
+        target = postgres_target()
+    return target
+
+
 def postgres_target():
     return {
         "type": "postgres",
@@ -89,7 +99,7 @@ def redshift_target():
 
 # The profile dictionary, used to write out profiles.yml
 @pytest.fixture
-def dbt_profile_data(unique_schema, request):
+def dbt_profile_data(unique_schema, dbt_profile_target):
     profile = {
         "config": {"send_anonymous_usage_stats": False},
         "test": {
@@ -99,13 +109,7 @@ def dbt_profile_data(unique_schema, request):
             "target": "default",
         },
     }
-    adapter_type = request.config.getoption("--adapter")
-    target = {}
-    if adapter_type == "postgres":
-        target = postgres_target()
-    elif adapter_type == "redshift":
-        target = redshift_target()
-
+    target = dbt_profile_target
     target["schema"] = unique_schema
     profile["test"]["outputs"]["default"] = target
     return profile

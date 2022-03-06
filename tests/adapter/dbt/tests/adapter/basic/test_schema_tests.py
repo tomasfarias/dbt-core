@@ -1,6 +1,6 @@
 import pytest
 from dbt.tests.util import run_dbt
-from tests.functional.adapter.files import (
+from dbt.tests.adapter.basic.files import (
     seeds_base_csv,
     schema_test_seed_yml,
     base_view_sql,

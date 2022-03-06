@@ -1,8 +1,7 @@
 import pytest
 
-from dbt.tests.util import run_dbt
-from dbt.tests.adapter import check_result_nodes_by_name
-from tests.functional.adapter.files import (
+from dbt.tests.util import run_dbt, check_result_nodes_by_name
+from dbt.tests.adapter.basic.files import (
     seeds_base_csv,
     ephemeral_with_cte_sql,
     test_ephemeral_passing_sql,

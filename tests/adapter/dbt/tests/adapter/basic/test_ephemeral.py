@@ -1,8 +1,13 @@
 import pytest
 import os
-from dbt.tests.util import run_dbt, get_manifest
-from dbt.tests.adapter import check_relations_equal, check_result_nodes_by_name, relation_from_name
-from tests.functional.adapter.files import (
+from dbt.tests.util import (
+    run_dbt,
+    get_manifest,
+    check_relations_equal,
+    check_result_nodes_by_name,
+    relation_from_name,
+)
+from dbt.tests.adapter.basic.files import (
     seeds_base_csv,
     base_ephemeral_sql,
     ephemeral_view_sql,

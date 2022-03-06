@@ -1,8 +1,12 @@
 import pytest
-from dbt.tests.util import run_dbt
-from dbt.tests.adapter import check_result_nodes_by_name
-from dbt.tests.adapter import relation_from_name, check_relation_types, check_relations_equal
-from tests.functional.adapter.files import (
+from dbt.tests.util import (
+    run_dbt,
+    check_result_nodes_by_name,
+    relation_from_name,
+    check_relation_types,
+    check_relations_equal,
+)
+from dbt.tests.adapter.basic.files import (
     seeds_base_csv,
     base_view_sql,
     base_table_sql,

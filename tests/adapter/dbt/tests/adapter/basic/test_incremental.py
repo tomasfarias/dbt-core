@@ -1,12 +1,11 @@
 import pytest
-from dbt.tests.util import run_dbt
-from tests.functional.adapter.files import (
+from dbt.tests.util import run_dbt, check_relations_equal, relation_from_name
+from dbt.tests.adapter.basic.files import (
     seeds_base_csv,
     seeds_added_csv,
     schema_base_yml,
     incremental_sql,
 )
-from dbt.tests.adapter import check_relations_equal, relation_from_name
 
 
 @pytest.fixture

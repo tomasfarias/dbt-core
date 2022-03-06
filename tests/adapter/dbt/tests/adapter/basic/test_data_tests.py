@@ -1,10 +1,9 @@
 import pytest
-from tests.functional.adapter.files import (
+from dbt.tests.adapter.basic.files import (
     test_passing_sql,
     test_failing_sql,
 )
-from dbt.tests.adapter import check_result_nodes_by_name
-from dbt.tests.util import run_dbt
+from dbt.tests.util import check_result_nodes_by_name, run_dbt
 
 
 @pytest.fixture

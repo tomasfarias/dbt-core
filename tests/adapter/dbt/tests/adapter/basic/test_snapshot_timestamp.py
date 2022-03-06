@@ -1,12 +1,11 @@
 import pytest
-from dbt.tests.util import run_dbt
-from tests.functional.adapter.files import (
+from dbt.tests.util import run_dbt, relation_from_name, update_rows
+from dbt.tests.adapter.basic.files import (
     seeds_base_csv,
     seeds_newcolumns_csv,
     seeds_added_csv,
     ts_snapshot_sql,
 )
-from dbt.tests.adapter import relation_from_name, update_rows
 
 
 @pytest.fixture

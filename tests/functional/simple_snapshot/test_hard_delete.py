@@ -24,7 +24,7 @@ def datetime_snapshot():
     return begin_snapshot_datetime
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots(snapshots_pg):  # noqa: F811
     return snapshots_pg
 

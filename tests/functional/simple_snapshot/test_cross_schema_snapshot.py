@@ -7,7 +7,7 @@ from tests.functional.simple_snapshot.fixtures import models, macros, snapshots_
 NUM_SNAPSHOT_MODELS = 1
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots(snapshots_pg):  # noqa: F811
     return snapshots_pg
 

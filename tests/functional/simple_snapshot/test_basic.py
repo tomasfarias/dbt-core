@@ -106,27 +106,27 @@ class RefSetup:
 # all of the tests below use one of both of the above tests with
 # various combinations of snapshots and macros
 class TestBasic(BasicSetup, RefSetup):
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def snapshots(self, snapshots_pg):  # noqa: F811
         return snapshots_pg
 
 
 class TestCustomNamespace(BasicSetup):
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def snapshots(self, snapshots_pg_custom_namespaced):  # noqa: F811
         return snapshots_pg_custom_namespaced
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def macros(self, macros_custom_snapshot):  # noqa: F811
         return macros_custom_snapshot
 
 
 class TestCustomSnapshot(BasicSetup, RefSetup):
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def snapshots(self, snapshots_pg_custom):  # noqa: F811
         return snapshots_pg_custom
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def macros(self, macros_custom_snapshot):  # noqa: F811
         return macros_custom_snapshot
 
@@ -150,18 +150,18 @@ class TestCheckCols(BasicSetup, RefSetup):
         super().assert_expected(table_comp)
         self.assert_case_tables_equal("snapshot_checkall", "snapshot_expected")
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def snapshots(self):
         return {"snapshot.sql": snapshots_check_col__snapshot_sql}
 
 
 # TODO: can't test below until TestCheckCols is fixed
 class TestConfiguredCheckCols(TestCheckCols):
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def snapshots(self):
         return {"snapshot.sql": snapshots_check_col_noconfig__snapshot_sql}
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def project_config_update(self):
         snapshot_config = {
             "snapshots": {
@@ -209,11 +209,11 @@ class TestUpdatedAtCheckCols(TestCheckCols):
         super().assert_expected(table_comp)
         table_comp.assert_tables_equal("snapshot_checkall", "snapshot_expected")
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def snapshots(self):
         return {"snapshot.sql": snapshots_check_col_noconfig__snapshot_sql}
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def project_config_update(self):
         snapshot_config = {
             "snapshots": {

@@ -575,7 +575,7 @@ snapshots_check_col_noconfig__snapshot_sql = """
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots_select():
     return {
         "snapshot.sql": snapshots_pg__snapshot_sql,
@@ -583,7 +583,7 @@ def snapshots_select():
     }
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots_pg_custom():
     return {"snapshot.sql": snapshots_pg_custom__snapshot_sql}
 
@@ -593,7 +593,7 @@ def snapshots_pg_custom():
 #     return {"snapshot_actual.sql": models_collision__snapshot_actual_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def macros_custom_snapshot():
     return {
         "test_no_overlaps.sql": macros__test_no_overlaps_sql,
@@ -616,7 +616,7 @@ def macros_custom_snapshot():
 #     return {"snapshot.sql": snapshots_invalid__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def models():
     return {
         "schema.yml": models__schema_yml,
@@ -624,7 +624,7 @@ def models():
     }
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def macros():
     return {"test_no_overlaps.sql": macros__test_no_overlaps_sql}
 
@@ -639,7 +639,7 @@ def macros():
 #     return {"snapshot.sql": snapshots_slow__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots_select_noconfig():
     return {"snapshot.sql": snapshots_select_noconfig__snapshot_sql}
 
@@ -649,7 +649,7 @@ def snapshots_select_noconfig():
 #     return {"snapshot.sql": snapshots_pg_custom_invalid__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def seeds():
     return {"seed_newcol.csv": seeds__seed_newcol_csv, "seed.csv": seeds__seed_csv}
 
@@ -664,17 +664,17 @@ def seeds():
 #     return {"snapshot.sql": snapshots_checkall__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots_pg_custom_namespaced():
     return {"snapshot.sql": snapshots_pg_custom_namespaced__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots_pg():
     return {"snapshot.sql": snapshots_pg__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def models_slow():
     return {"gen.sql": models_slow__gen_sql}
 
@@ -689,7 +689,7 @@ def models_slow():
 #     return {"snapshot.sql": snapshots_check_col_noconfig__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def project_files(
     project_root,
     snapshots_select,

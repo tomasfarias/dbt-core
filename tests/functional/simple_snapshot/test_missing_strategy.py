@@ -23,7 +23,7 @@ snapshots_invalid__snapshot_sql = """
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots():
     return {"snapshot.sql": snapshots_invalid__snapshot_sql}
 

@@ -124,7 +124,7 @@ class SelectExcludeSetup:
 # all of the tests below use one of both of the above tests with
 # various combinations of snapshots and macros
 class TestSelectBasic(SelectExcludeSetup):
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def snapshots(self):
         return {
             "snapshot.sql": snapshots_pg__snapshot_sql,
@@ -132,22 +132,23 @@ class TestSelectBasic(SelectExcludeSetup):
         }
 
 
-class TestSelectConfigured(SelectExcludeSetup):
-    @pytest.fixture
-    def snapshots(self, snapshots_select_noconfig):  # noqa: F811
-        return snapshots_select_noconfig
+# @pytest.mark.usefixtures("project")
+# class TestSelectConfigured(SelectExcludeSetup):
+#     @pytest.fixture(scope="class")
+#     def snapshots(self, snapshots_select_noconfig):  # noqa: F811
+#         return snapshots_select_noconfig
 
-    # TODO: don't have access to project here so this breaks
-    @pytest.fixture
-    def project_config_update(self):
-        snapshot_config = {
-            "snapshots": {
-                "test": {
-                    "target_schema": self.project.test_schema,
-                    "unique_key": "id || '-' || first_name",
-                    "strategy": "timestamp",
-                    "updated_at": "updated_at",
-                }
-            }
-        }
-        return snapshot_config
+#     # TODO: don't have access to project here so this breaks
+#     @pytest.fixture(scope="class")
+#     def project_config_update(self):
+#         snapshot_config = {
+#             "snapshots": {
+#                 "test": {
+#                     "target_schema": self.project.test_schema,
+#                     "unique_key": "id || '-' || first_name",
+#                     "strategy": "timestamp",
+#                     "updated_at": "updated_at",
+#                 }
+#             }
+#         }
+#         return snapshot_config

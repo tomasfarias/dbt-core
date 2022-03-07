@@ -56,17 +56,17 @@ where snap1.dbt_valid_to is null
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def models(models_slow):  # noqa: F811
     return models_slow
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots():
     return {"snapshot.sql": snapshots_slow__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def tests():
     return {"test_timestamps.sql": test_snapshots_slow__test_timestamps_sql}
 

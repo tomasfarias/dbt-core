@@ -33,7 +33,7 @@ snapshots_longtext__snapshot_sql = """
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots():
     return {"snapshot.sql": snapshots_longtext__snapshot_sql}
 

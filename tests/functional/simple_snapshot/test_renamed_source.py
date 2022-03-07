@@ -11,12 +11,12 @@ snapshots_checkall__snapshot_sql = """
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots():
     return {"snapshot.sql": snapshots_checkall__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def macros(macros_custom_snapshot):  # noqa: F811
     return macros_custom_snapshot
 
@@ -34,9 +34,6 @@ def test_renamed_source(project):
         assert len(result) == 6
 
     # over ride the ref var in the snapshot definition to use a seed with an additional column, last_name
-
-    breakpoint()
-    # TODO: this is broken.  for some reason it's looking for column "a" instead of actual column names??? need to fix
     run_dbt(["snapshot", "--vars", "{seed_name: seed_newcol}"])
     results = project.run_sql(
         "select * from {}.{}.my_snapshot where last_name is not NULL".format(

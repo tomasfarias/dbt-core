@@ -90,25 +90,25 @@ where failures = 1
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots():
     return {"my_snapshot.sql": snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def tests():
     return {"my_test.sql": snapshot_test_sql}
 
 
 def test_simple_snapshot(project):
-    
-    results = run_dbt(["snapshot", '--vars', 'version: 1'])
+
+    results = run_dbt(["snapshot", "--vars", "version: 1"])
     assert len(results) == 1
 
-    results = run_dbt(["snapshot", '--vars', 'version: 2'])
+    results = run_dbt(["snapshot", "--vars", "version: 2"])
     assert len(results) == 1
 
-    results = run_dbt(["snapshot", '--vars', 'version: 3'])
+    results = run_dbt(["snapshot", "--vars", "version: 3"])
     assert len(results) == 1
 
-    run_dbt(['test', '--select', 'test_type:singular', '--vars', 'version: 3'])
+    run_dbt(["test", "--select", "test_type:singular", "--vars", "version: 3"])

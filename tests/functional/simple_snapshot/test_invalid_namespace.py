@@ -28,12 +28,12 @@ snapshots_pg_custom_invalid__snapshot_sql = """
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots():
     return {"snapshots.sql": snapshots_pg_custom_invalid__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def macros(macros_custom_snapshot):  # noqa: F811
     return macros_custom_snapshot
 

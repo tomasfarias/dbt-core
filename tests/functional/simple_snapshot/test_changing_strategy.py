@@ -100,17 +100,17 @@ snapshots_changing_strategy__snapshot_sql = """
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def models(models_slow):  # noqa: F811
     return models_slow
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def snapshots():
     return {"snapshot.sql": snapshots_changing_strategy__snapshot_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def tests():
     return {"test_snapshot.sql": test_snapshots_changing_strategy__test_snapshot_sql}
 

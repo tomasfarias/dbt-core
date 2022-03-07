@@ -383,15 +383,13 @@ snapshots_select_noconfig__snapshot_sql = """
 # {% endsnapshot %}
 # """
 
-seeds__seed_newcol_csv = """
-id,first_name,last_name
+seeds__seed_newcol_csv = """id,first_name,last_name
 1,Judith,Kennedy
 2,Arthur,Kelly
 3,Rachel,Moreno
 """
 
-seeds__seed_csv = """
-id,first_name
+seeds__seed_csv = """id,first_name
 1,Judith
 2,Arthur
 3,Rachel

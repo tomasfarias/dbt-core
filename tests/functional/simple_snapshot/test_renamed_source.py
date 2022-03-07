@@ -24,7 +24,6 @@ def macros(macros_custom_snapshot):  # noqa: F811
 def test_renamed_source(project):
     run_dbt(["seed"])
     run_dbt(["snapshot"])
-    breakpoint()  # TODO: not sure why but the seeds don't get an ID - come back later.
     database = project.database
     results = project.run_sql(
         "select * from {}.{}.my_snapshot".format(database, project.test_schema),
@@ -36,6 +35,8 @@ def test_renamed_source(project):
 
     # over ride the ref var in the snapshot definition to use a seed with an additional column, last_name
 
+    breakpoint()
+    # TODO: this is broken.  for some reason it's looking for column a instead of actual column names??? need to fix
     run_dbt(["snapshot", "--vars", "{seed_name: seed_newcol}"])
     results = project.run_sql(
         "select * from {}.{}.my_snapshot where last_name is not NULL".format(

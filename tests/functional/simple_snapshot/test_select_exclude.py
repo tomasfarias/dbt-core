@@ -137,6 +137,7 @@ class TestSelectConfigured(SelectExcludeSetup):
     def snapshots(self, snapshots_select_noconfig):  # noqa: F811
         return snapshots_select_noconfig
 
+    # TODO: don't have access to project here so this breaks
     @pytest.fixture
     def project_config_update(self):
         snapshot_config = {

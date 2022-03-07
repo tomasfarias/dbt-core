@@ -6,7 +6,8 @@ from tests.functional.simple_snapshot.fixtures import (  # noqa: F401
     seeds,
     macros_custom_snapshot,
 )
-from tests.functional.simple_snapshot.common_tests import NUM_SNAPSHOT_MODELS
+
+NUM_SNAPSHOT_MODELS = 1
 
 
 snapshots_pg_custom_invalid__snapshot_sql = """

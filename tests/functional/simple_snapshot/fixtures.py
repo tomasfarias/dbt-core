@@ -322,18 +322,18 @@ select * from validation_errors
 # {% endsnapshot %}
 # """
 
-# snapshots_select_noconfig__snapshot_sql = """
-# {% snapshot snapshot_actual %}
+snapshots_select_noconfig__snapshot_sql = """
+{% snapshot snapshot_actual %}
 
-#     {{
-#         config(
-#             target_database=var('target_database', database),
-#             target_schema=var('target_schema', schema),
-#         )
-#     }}
-#     select * from {{target.database}}.{{target.schema}}.seed
+    {{
+        config(
+            target_database=var('target_database', database),
+            target_schema=var('target_schema', schema),
+        )
+    }}
+    select * from {{target.database}}.{{target.schema}}.seed
 
-# {% endsnapshot %}
+{% endsnapshot %}
 
 # {% snapshot snapshot_castillo %}
 
@@ -641,9 +641,9 @@ def macros():
 #     return {"snapshot.sql": snapshots_slow__snapshot_sql}
 
 
-# @pytest.fixture
-# def snapshots_select_noconfig():
-#     return {"snapshot.sql": snapshots_select_noconfig__snapshot_sql}
+@pytest.fixture
+def snapshots_select_noconfig():
+    return {"snapshot.sql": snapshots_select_noconfig__snapshot_sql}
 
 
 # @pytest.fixture
@@ -705,7 +705,7 @@ def project_files(
     macros,
     #     test_snapshots_changing_strategy,
     #     snapshots_slow,
-    #     snapshots_select_noconfig,
+    snapshots_select_noconfig,
     #     snapshots_pg_custom_invalid,
     seeds,
     #     snapshots_changing_strategy,
@@ -731,9 +731,7 @@ def project_files(
     #         test_snapshots_changing_strategy,
     #     )
     #     write_project_files(project_root, "snapshots-slow", snapshots_slow)
-    #     write_project_files(
-    #         project_root, "snapshots-select-noconfig", snapshots_select_noconfig
-    #     )
+    write_project_files(project_root, "snapshots-select-noconfig", snapshots_select_noconfig)
     #     write_project_files(
     #         project_root, "snapshots-pg-custom-invalid", snapshots_pg_custom_invalid
     #     )

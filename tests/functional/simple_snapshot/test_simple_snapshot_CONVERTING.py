@@ -247,7 +247,7 @@ def project_config(self):
 #     self.assertTableDoesNotExist('snapshot_kelly')
 #     self.assertTableDoesNotExist('snapshot_actual')
 
-# not test_cross_schema_snapshot
+# test_select_exclude.py
 # def project_config(self):
 #     return {
 #         "config-version": 2,
@@ -265,6 +265,7 @@ def project_config(self):
 #     }
 
 
+# test_cross_schema_snapshot.py
 # NUM_SNAPSHOT_MODELS = 1
 
 
@@ -337,6 +338,7 @@ def project_config(self):
 #     assert "Snapshots must be configured with a 'strategy'" in str(exc.exception)
 
 
+# test_
 NUM_SNAPSHOT_MODELS = 2
 
 

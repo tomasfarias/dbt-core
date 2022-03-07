@@ -478,76 +478,76 @@ class BaseSimpleSnapshotTest(DBTIntegrationTest):
 #         got_names = set(r.get('longstring') for r in results)
 #         self.assertEqual(got_names, {'a' * 500, 'short'})
 
+# test_slow_query.py
+# class TestSlowQuery(DBTIntegrationTest):
 
-class TestSlowQuery(DBTIntegrationTest):
+#     @property
+#     def schema(self):
+#         return "simple_snapshot_004"
 
-    @property
-    def schema(self):
-        return "simple_snapshot_004"
+#     @property
+#     def models(self):
+#         return "models-slow"
 
-    @property
-    def models(self):
-        return "models-slow"
+#     def run_snapshot(self):
+#         return self.run_dbt(['snapshot'])
 
-    def run_snapshot(self):
-        return self.run_dbt(['snapshot'])
+#     @property
+#     def project_config(self):
+#         return {
+#             "config-version": 2,
+#             "snapshot-paths": ['snapshots-slow'],
+#             "test-paths": ["test-snapshots-slow"],
+#         }
 
-    @property
-    def project_config(self):
-        return {
-            "config-version": 2,
-            "snapshot-paths": ['snapshots-slow'],
-            "test-paths": ["test-snapshots-slow"],
-        }
+#     @use_profile('postgres')
+#     def test__postgres__slow(self):
+#         results = self.run_dbt(['snapshot'])
+#         self.assertEqual(len(results), 1)
 
-    @use_profile('postgres')
-    def test__postgres__slow(self):
-        results = self.run_dbt(['snapshot'])
-        self.assertEqual(len(results), 1)
+#         results = self.run_dbt(['snapshot'])
+#         self.assertEqual(len(results), 1)
 
-        results = self.run_dbt(['snapshot'])
-        self.assertEqual(len(results), 1)
+#         results = self.run_dbt(['test'])
+#         self.assertEqual(len(results), 1)
 
-        results = self.run_dbt(['test'])
-        self.assertEqual(len(results), 1)
+# test_changing_strategy.py
+# class TestChangingStrategy(DBTIntegrationTest):
 
+#     @property
+#     def schema(self):
+#         return "simple_snapshot_004"
 
-class TestChangingStrategy(DBTIntegrationTest):
+#     @property
+#     def models(self):
+#         return "models-slow"
 
-    @property
-    def schema(self):
-        return "simple_snapshot_004"
+#     def run_snapshot(self):
+#         return self.run_dbt(['snapshot'])
 
-    @property
-    def models(self):
-        return "models-slow"
+#     @property
+#     def project_config(self):
+#         return {
+#             "config-version": 2,
+#             "snapshot-paths": ['snapshots-changing-strategy'],
+#             "test-paths": ["test-snapshots-changing-strategy"],
+#         }
 
-    def run_snapshot(self):
-        return self.run_dbt(['snapshot'])
+#     @use_profile('postgres')
+#     def test__postgres__changing_strategy(self):
+#         results = self.run_dbt(['snapshot', '--vars', '{strategy: check, step: 1}'])
+#         self.assertEqual(len(results), 1)
 
-    @property
-    def project_config(self):
-        return {
-            "config-version": 2,
-            "snapshot-paths": ['snapshots-changing-strategy'],
-            "test-paths": ["test-snapshots-changing-strategy"],
-        }
+#         results = self.run_dbt(['snapshot', '--vars', '{strategy: check, step: 2}'])
+#         self.assertEqual(len(results), 1)
 
-    @use_profile('postgres')
-    def test__postgres__changing_strategy(self):
-        results = self.run_dbt(['snapshot', '--vars', '{strategy: check, step: 1}'])
-        self.assertEqual(len(results), 1)
+#         results = self.run_dbt(['snapshot', '--vars', '{strategy: timestamp, step: 3}'])
+#         self.assertEqual(len(results), 1)
 
-        results = self.run_dbt(['snapshot', '--vars', '{strategy: check, step: 2}'])
-        self.assertEqual(len(results), 1)
+#         results = self.run_dbt(['test'])
+#         self.assertEqual(len(results), 1)
 
-        results = self.run_dbt(['snapshot', '--vars', '{strategy: timestamp, step: 3}'])
-        self.assertEqual(len(results), 1)
-
-        results = self.run_dbt(['test'])
-        self.assertEqual(len(results), 1)
-
-
+test_hard_delete.py
 class TestSnapshotHardDelete(DBTIntegrationTest):
     # These tests uses the same seed data, containing 20 records of which we hard delete the last 10.
     # These deleted records set the dbt_valid_to to time the snapshot was ran.

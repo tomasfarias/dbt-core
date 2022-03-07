@@ -132,23 +132,22 @@ class TestSelectBasic(SelectExcludeSetup):
         }
 
 
-# @pytest.mark.usefixtures("project")
-# class TestSelectConfigured(SelectExcludeSetup):
-#     @pytest.fixture(scope="class")
-#     def snapshots(self, snapshots_select_noconfig):  # noqa: F811
-#         return snapshots_select_noconfig
+class TestSelectConfigured(SelectExcludeSetup):
+    @pytest.fixture(scope="class")
+    def snapshots(self, snapshots_select_noconfig):  # noqa: F811
+        return snapshots_select_noconfig
 
-#     # TODO: don't have access to project here so this breaks
-#     @pytest.fixture(scope="class")
-#     def project_config_update(self):
-#         snapshot_config = {
-#             "snapshots": {
-#                 "test": {
-#                     "target_schema": self.project.test_schema,
-#                     "unique_key": "id || '-' || first_name",
-#                     "strategy": "timestamp",
-#                     "updated_at": "updated_at",
-#                 }
-#             }
-#         }
-#         return snapshot_config
+    # TODO: don't have access to project here so this breaks
+    @pytest.fixture(scope="class")
+    def project_config_update(self):
+        snapshot_config = {
+            "snapshots": {
+                "test": {
+                    "target_schema": self.project.test_schema,
+                    "unique_key": "id || '-' || first_name",
+                    "strategy": "timestamp",
+                    "updated_at": "updated_at",
+                }
+            }
+        }
+        return snapshot_config

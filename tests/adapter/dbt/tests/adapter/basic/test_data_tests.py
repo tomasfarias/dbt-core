@@ -6,30 +6,29 @@ from dbt.tests.adapter.basic.files import (
 from dbt.tests.util import check_result_nodes_by_name, run_dbt
 
 
-@pytest.fixture
-def tests():
-    return {
-        "passing.sql": test_passing_sql,
-        "failing.sql": test_failing_sql,
-    }
+class TestDataTests:
+    @pytest.fixture(scope="class")
+    def tests(self):
+        return {
+            "passing.sql": test_passing_sql,
+            "failing.sql": test_failing_sql,
+        }
 
+    @pytest.fixture(scope="class")
+    def project_config_update(self):
+        return {"name": "data_tests"}
 
-@pytest.fixture
-def project_config_update():
-    return {"name": "data_tests"}
+    def test_data_tests(self, project):
+        # test command
+        results = run_dbt(["test"])
+        assert len(results) == 2
 
+        # We have the right result nodes
+        check_result_nodes_by_name(results, ["passing", "failing"])
 
-def test_data_tests(project):
-    # test command
-    results = run_dbt(["test"])
-    assert len(results) == 2
-
-    # We have the right result nodes
-    check_result_nodes_by_name(results, ["passing", "failing"])
-
-    # Check result status
-    for result in results:
-        if result.node.name == "passing":
-            assert result.status == "pass"
-        elif result.node.name == "failing":
-            assert result.status == "fail"
+        # Check result status
+        for result in results:
+            if result.node.name == "passing":
+                assert result.status == "pass"
+            elif result.node.name == "failing":
+                assert result.status == "fail"

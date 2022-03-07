@@ -7,12 +7,12 @@ model_sql = """
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def models():
     return {"model.sql": model_sql}
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def dbt_profile_data(unique_schema):
 
     return {

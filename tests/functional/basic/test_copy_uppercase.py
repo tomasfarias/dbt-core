@@ -21,7 +21,7 @@ select * from {{ ref('MATERIALIZED') }}
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def dbt_profile_data(unique_schema):
     return {
         "config": {"send_anonymous_usage_stats": False},
@@ -43,7 +43,7 @@ def dbt_profile_data(unique_schema):
     }
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def models():
     return {
         "ADVANCED_INCREMENTAL.sql": advanced_incremental_sql,
@@ -59,7 +59,7 @@ def models():
     }
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def seeds(test_data_dir):
     # Read seed file and return
     seed_csv = read_file(test_data_dir, "seed-initial.csv")

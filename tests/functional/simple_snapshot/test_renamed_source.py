@@ -36,7 +36,7 @@ def test_renamed_source(project):
     # over ride the ref var in the snapshot definition to use a seed with an additional column, last_name
 
     breakpoint()
-    # TODO: this is broken.  for some reason it's looking for column a instead of actual column names??? need to fix
+    # TODO: this is broken.  for some reason it's looking for column "a" instead of actual column names??? need to fix
     run_dbt(["snapshot", "--vars", "{seed_name: seed_newcol}"])
     results = project.run_sql(
         "select * from {}.{}.my_snapshot where last_name is not NULL".format(

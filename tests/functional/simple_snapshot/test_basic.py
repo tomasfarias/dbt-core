@@ -1,4 +1,6 @@
 import os
+from datetime import datetime
+import pytz
 import pytest
 from dbt.tests.util import run_dbt
 from dbt.tests.tables import TableComparison
@@ -27,6 +29,19 @@ snapshots_check_col__snapshot_sql = """
         select * from {{target.database}}.{{schema}}.seed
 
     {% endsnapshot %}
+"""
+
+
+snapshots_check_col_noconfig__snapshot_sql = """
+{% snapshot snapshot_actual %}
+    select * from {{target.database}}.{{schema}}.seed
+{% endsnapshot %}
+
+{# This should be exactly the same #}
+{% snapshot snapshot_checkall %}
+    {{ config(check_cols='all') }}
+    select * from {{target.database}}.{{schema}}.seed
+{% endsnapshot %}
 """
 
 
@@ -116,92 +131,99 @@ class TestCustomSnapshot(BasicSetup, RefSetup):
         return macros_custom_snapshot
 
 
-# class TestCheckCols(BasicSetup, RefSetup):
-#     # TODO: this test overrides how we check equality - it's broken
-#     NUM_SNAPSHOT_MODELS = 2
+class TestCheckCols(BasicSetup, RefSetup):
+    # TODO: this test overrides how we check equality - it's broken
+    NUM_SNAPSHOT_MODELS = 2
 
-#     def _assert_tables_equal_sql(self, relation_a, relation_b, columns=None):
-#         # When building the equality tests, only test columns that don't start
-#         # with 'dbt_', because those are time-sensitive
-#         if columns is None:
-#             columns = [
-#                 c
-#                 for c in self.get_relation_columns(relation_a)
-#                 if not c[0].lower().startswith("dbt_")
-#             ]
-#         return super()._assertTablesEqualSql(relation_a, relation_b, columns=columns)
+    def _assert_tables_equal_sql(self, relation_a, relation_b, columns=None):
+        # When building the equality tests, only test columns that don't start
+        # with 'dbt_', because those are time-sensitive
+        if columns is None:
+            columns = [
+                c
+                for c in self.get_relation_columns(relation_a)
+                if not c[0].lower().startswith("dbt_")
+            ]
+        return super()._assert_tables_equal_sql(relation_a, relation_b, columns=columns)
 
-#     def assert_expected(self, table_comp):
-#         super().assert_expected(table_comp)
-#         self.assert_case_tables_equal("snapshot_checkall", "snapshot_expected")
+    def assert_expected(self, table_comp):
+        super().assert_expected(table_comp)
+        self.assert_case_tables_equal("snapshot_checkall", "snapshot_expected")
 
-#     @pytest.fixture
-#     def snapshots(self):
-#         return {"snapshot.sql": snapshots_check_col__snapshot_sql}
-
-
-# TODO: below is copied stright from the original test - need to convert it still.  First need to fix ResrCheckCols though.
-# class TestConfiguredCheckCols(TestCheckCols):
-#     @property
-#     def project_config(self):
-#         return {
-#             'config-version': 2,
-#             'seed-paths': ['seeds'],
-#             "snapshot-paths": ['snapshots-check-col-noconfig'],
-#             "snapshots": {
-#                 "test": {
-#                     "target_schema": self.unique_schema(),
-#                     "unique_key": "id || '-' || first_name",
-#                     "strategy": "check",
-#                     "check_cols": ["email"],
-#                 },
-#             },
-#             'macro-paths': ['macros'],
-#         }
+    @pytest.fixture
+    def snapshots(self):
+        return {"snapshot.sql": snapshots_check_col__snapshot_sql}
 
 
-# class TestUpdatedAtCheckCols(TestCheckCols):
-#      def _assertTablesEqualSql(self, relation_a, relation_b, columns=None):
-#          revived_records = self.run_sql(
-#              '''
-#              select
-#                  id,
-#                  updated_at,
-#                  dbt_valid_from
-#              from {}
-#              '''.format(relation_b),
-#              fetch='all'
-#          )
+# TODO: can't test below until TestCheckCols is fixed
+class TestConfiguredCheckCols(TestCheckCols):
+    @pytest.fixture
+    def snapshots(self):
+        return {"snapshot.sql": snapshots_check_col_noconfig__snapshot_sql}
 
-#          for result in revived_records:
-#              # result is a tuple, the updated_at is second and dbt_valid_from is latest
-#              self.assertIsInstance(result[1], datetime)
-#              self.assertIsInstance(result[2], datetime)
-#              self.assertEqual(result[1].replace(tzinfo=pytz.UTC), result[2].replace(tzinfo=pytz.UTC))
-
-#          if columns is None:
-#              columns = [c for c in self.get_relation_columns(relation_a) if not c[0].lower().startswith('dbt_')]
-#          return super()._assertTablesEqualSql(relation_a, relation_b, columns=columns)
-
-#      def assert_expected(self):
-#          super().assert_expected()
-#          self.assertTablesEqual('snapshot_checkall', 'snapshot_expected')
+    @pytest.fixture
+    def project_config_update(self):
+        snapshot_config = {
+            "snapshots": {
+                "test": {
+                    "target_schema": self.project.test_schema,
+                    "unique_key": "id || '-' || first_name",
+                    "strategy": "check",
+                    "check_cols": ["email"],
+                }
+            }
+        }
+        return snapshot_config
 
 
-#      @property
-#      def project_config(self):
-#          return {
-#              'config-version': 2,
-#             'seed-paths': ['seeds'],
-#              "snapshot-paths": ['snapshots-check-col-noconfig'],
-#              "snapshots": {
-#                  "test": {
-#                      "target_schema": self.unique_schema(),
-#                      "unique_key": "id || '-' || first_name",
-#                      "strategy": "check",
-#                      "check_cols" : "all",
-#                      "updated_at": "updated_at",
-#                  },
-#              },
-#              'macro-paths': ['macros'],
-#          }
+class TestUpdatedAtCheckCols(TestCheckCols):
+    def _assert_tables_equal_sql(self, relation_a, relation_b, columns=None):
+        revived_records = self.run_sql(
+            """
+            select
+                id,
+                updated_at,
+                dbt_valid_from
+            from {}
+            """.format(
+                relation_b
+            ),
+            fetch="all",
+        )
+
+        for result in revived_records:
+            # result is a tuple, the updated_at is second and dbt_valid_from is latest
+            assert isinstance(result[1], datetime)
+            assert isinstance(result[2], datetime)
+            assert result[1].replace(tzinfo=pytz.UTC) == result[2].replace(tzinfo=pytz.UTC)
+
+        if columns is None:
+            columns = [
+                c
+                for c in self.get_relation_columns(relation_a)
+                if not c[0].lower().startswith("dbt_")
+            ]
+        return super()._assert_tables_equal_sql(relation_a, relation_b, columns=columns)
+
+    def assert_expected(self, table_comp):
+        super().assert_expected(table_comp)
+        table_comp.assert_tables_equal("snapshot_checkall", "snapshot_expected")
+
+    @pytest.fixture
+    def snapshots(self):
+        return {"snapshot.sql": snapshots_check_col_noconfig__snapshot_sql}
+
+    @pytest.fixture
+    def project_config_update(self):
+        snapshot_config = {
+            "snapshots": {
+                "test": {
+                    "target_schema": self.unique_schema(),
+                    "unique_key": "id || '-' || first_name",
+                    "strategy": "check",
+                    "check_cols": "all",
+                    "updated_at": "updated_at",
+                }
+            }
+        }
+        return snapshot_config

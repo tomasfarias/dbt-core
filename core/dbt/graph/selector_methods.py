@@ -529,8 +529,7 @@ class ResultSelectorMethod(SelectorMethod):
 
 class SourceStatusSelectorMethod(
     SelectorMethod
-):  # TODO: this requires SelectorMethod to have current_state as an argument.
-    # currently, this works because it's all hard-coded
+):
     def search(self, included_nodes: Set[UniqueId], selector: str) -> Iterator[UniqueId]:
 
         if self.previous_state is None or self.previous_state.sources is None:

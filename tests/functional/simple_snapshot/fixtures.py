@@ -502,79 +502,79 @@ snapshots_pg__snapshot_sql = """
 """
 
 
-# models_slow__gen_sql = """
+models_slow__gen_sql = """
 
-# {{ config(materialized='ephemeral') }}
+{{ config(materialized='ephemeral') }}
 
 
-# /*
-#     Generates 50 rows that "appear" to update every
-#     second to a query-er.
+/*
+    Generates 50 rows that "appear" to update every
+    second to a query-er.
 
-#     1	2020-04-21 20:44:00-04	0
-#     2	2020-04-21 20:43:59-04	59
-#     3	2020-04-21 20:43:58-04	58
-#     4	2020-04-21 20:43:57-04	57
+    1	2020-04-21 20:44:00-04	0
+    2	2020-04-21 20:43:59-04	59
+    3	2020-04-21 20:43:58-04	58
+    4	2020-04-21 20:43:57-04	57
 
-#     .... 1 second later ....
+    .... 1 second later ....
 
-#     1	2020-04-21 20:44:01-04	1
-#     2	2020-04-21 20:44:00-04	0
-#     3	2020-04-21 20:43:59-04	59
-#     4	2020-04-21 20:43:58-04	58
+    1	2020-04-21 20:44:01-04	1
+    2	2020-04-21 20:44:00-04	0
+    3	2020-04-21 20:43:59-04	59
+    4	2020-04-21 20:43:58-04	58
 
-#     This view uses pg_sleep(2) to make queries against
-#     the view take a non-trivial amount of time
+    This view uses pg_sleep(2) to make queries against
+    the view take a non-trivial amount of time
 
-#     Use statement_timestamp() as it changes during a transactions.
-#     If we used now() or current_time or similar, then the timestamp
-#     of the start of the transaction would be returned instead.
-# */
+    Use statement_timestamp() as it changes during a transactions.
+    If we used now() or current_time or similar, then the timestamp
+    of the start of the transaction would be returned instead.
+*/
 
-# with gen as (
+with gen as (
 
-#     select
-#         id,
-#         date_trunc('second', statement_timestamp()) - (interval '1 second' * id) as updated_at
+    select
+        id,
+        date_trunc('second', statement_timestamp()) - (interval '1 second' * id) as updated_at
 
-#     from generate_series(1, 10) id
+    from generate_series(1, 10) id
 
-# )
+)
 
-# select
-#     id,
-#     updated_at,
-#     extract(seconds from updated_at)::int as seconds
+select
+    id,
+    updated_at,
+    extract(seconds from updated_at)::int as seconds
 
-# from gen, pg_sleep(2)
-# """
+from gen, pg_sleep(2)
+"""
 
-# snapshots_longtext__snapshot_sql = """
-# {% snapshot snapshot_actual %}
-#     {{
-#         config(
-#             target_database=var('target_database', database),
-#             target_schema=schema,
-#             unique_key='id',
-#             strategy='timestamp',
-#             updated_at='updated_at',
-#         )
-#     }}
-#     select * from {{target.database}}.{{schema}}.super_long
-# {% endsnapshot %}
-# """
+snapshots_longtext__snapshot_sql = """
+{% snapshot snapshot_actual %}
+    {{
+        config(
+            target_database=var('target_database', database),
+            target_schema=schema,
+            unique_key='id',
+            strategy='timestamp',
+            updated_at='updated_at',
+        )
+    }}
+    select * from {{target.database}}.{{schema}}.super_long
+{% endsnapshot %}
+"""
 
-# snapshots_check_col_noconfig__snapshot_sql = """
-# {% snapshot snapshot_actual %}
-#     select * from {{target.database}}.{{schema}}.seed
-# {% endsnapshot %}
+snapshots_check_col_noconfig__snapshot_sql = """
+{% snapshot snapshot_actual %}
+    select * from {{target.database}}.{{schema}}.seed
+{% endsnapshot %}
 
-# {# This should be exactly the same #}
-# {% snapshot snapshot_checkall %}
-# 	{{ config(check_cols='all') }}
-#     select * from {{target.database}}.{{schema}}.seed
-# {% endsnapshot %}
-# """
+{# This should be exactly the same #}
+{% snapshot snapshot_checkall %}
+    {{ config(check_cols='all') }}
+    select * from {{target.database}}.{{schema}}.seed
+{% endsnapshot %}
+"""
 
 
 @pytest.fixture
@@ -676,9 +676,9 @@ def snapshots_pg():
     return {"snapshot.sql": snapshots_pg__snapshot_sql}
 
 
-# @pytest.fixture
-# def models_slow():
-#     return {"gen.sql": models_slow__gen_sql}
+@pytest.fixture
+def models_slow():
+    return {"gen.sql": models_slow__gen_sql}
 
 
 # @pytest.fixture
@@ -712,7 +712,7 @@ def project_files(
     #     snapshots_checkall,
     snapshots_pg_custom_namespaced,
     snapshots_pg,
-    #     models_slow,
+    models_slow,
     #     snapshots_longtext,
     #     snapshots_check_col_noconfig,
 ):
@@ -745,8 +745,9 @@ def project_files(
     )
     write_project_files(project_root, "snapshots-pg", snapshots_pg)
 
+    write_project_files(project_root, "models-slow", models_slow)
 
-#     write_project_files(project_root, "models-slow", models_slow)
+
 #     write_project_files(project_root, "snapshots-longtext", snapshots_longtext)
 #     write_project_files(
 #         project_root, "snapshots-check-col-noconfig", snapshots_check_col_noconfig

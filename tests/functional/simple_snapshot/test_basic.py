@@ -116,31 +116,31 @@ class TestCustomSnapshot(BasicSetup, RefSetup):
         return macros_custom_snapshot
 
 
-class TestCheckCols(BasicSetup, RefSetup):
-    # TODO: this test overrides how we check equality - it's broken
-    NUM_SNAPSHOT_MODELS = 2
+# class TestCheckCols(BasicSetup, RefSetup):
+#     # TODO: this test overrides how we check equality - it's broken
+#     NUM_SNAPSHOT_MODELS = 2
 
-    def _assert_tables_equal_sql(self, relation_a, relation_b, columns=None):
-        # When building the equality tests, only test columns that don't start
-        # with 'dbt_', because those are time-sensitive
-        if columns is None:
-            columns = [
-                c
-                for c in self.get_relation_columns(relation_a)
-                if not c[0].lower().startswith("dbt_")
-            ]
-        return super()._assertTablesEqualSql(relation_a, relation_b, columns=columns)
+#     def _assert_tables_equal_sql(self, relation_a, relation_b, columns=None):
+#         # When building the equality tests, only test columns that don't start
+#         # with 'dbt_', because those are time-sensitive
+#         if columns is None:
+#             columns = [
+#                 c
+#                 for c in self.get_relation_columns(relation_a)
+#                 if not c[0].lower().startswith("dbt_")
+#             ]
+#         return super()._assertTablesEqualSql(relation_a, relation_b, columns=columns)
 
-    def assert_expected(self, table_comp):
-        super().assert_expected(table_comp)
-        self.assert_case_tables_equal("snapshot_checkall", "snapshot_expected")
+#     def assert_expected(self, table_comp):
+#         super().assert_expected(table_comp)
+#         self.assert_case_tables_equal("snapshot_checkall", "snapshot_expected")
 
-    @pytest.fixture
-    def snapshots(self):
-        return {"snapshot.sql": snapshots_check_col__snapshot_sql}
+#     @pytest.fixture
+#     def snapshots(self):
+#         return {"snapshot.sql": snapshots_check_col__snapshot_sql}
 
 
-# TODO: below is copied stright from the original test - need to convert it still
+# TODO: below is copied stright from the original test - need to convert it still.  First need to fix ResrCheckCols though.
 # class TestConfiguredCheckCols(TestCheckCols):
 #     @property
 #     def project_config(self):

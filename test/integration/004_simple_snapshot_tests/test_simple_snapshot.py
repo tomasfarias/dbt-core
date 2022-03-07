@@ -441,42 +441,42 @@ class BaseSimpleSnapshotTest(DBTIntegrationTest):
 #              'macro-paths': ['macros'],
 #          }
 
+#test_long_test.py
+# class TestLongText(DBTIntegrationTest):
 
-class TestLongText(DBTIntegrationTest):
+#     @property
+#     def schema(self):
+#         return "simple_snapshot_004"
 
-    @property
-    def schema(self):
-        return "simple_snapshot_004"
+#     @property
+#     def models(self):
+#         return "models"
 
-    @property
-    def models(self):
-        return "models"
+#     def run_snapshot(self):
+#         return self.run_dbt(['snapshot'])
 
-    def run_snapshot(self):
-        return self.run_dbt(['snapshot'])
+#     @property
+#     def project_config(self):
+#         return {
+#             'config-version': 2,
+#             "snapshot-paths": ['snapshots-longtext'],
+#             'macro-paths': ['macros'],
+#         }
 
-    @property
-    def project_config(self):
-        return {
-            'config-version': 2,
-            "snapshot-paths": ['snapshots-longtext'],
-            'macro-paths': ['macros'],
-        }
+#     @use_profile('postgres')
+#     def test__postgres__long_text(self):
+#         self.run_sql_file('seed_longtext.sql')
+#         results = self.run_dbt(['snapshot'])
+#         self.assertEqual(len(results), 1)
 
-    @use_profile('postgres')
-    def test__postgres__long_text(self):
-        self.run_sql_file('seed_longtext.sql')
-        results = self.run_dbt(['snapshot'])
-        self.assertEqual(len(results), 1)
-
-        with self.adapter.connection_named('test'):
-            status, results = self.adapter.execute(
-                'select * from {}.{}.snapshot_actual'.format(self.default_database, self.unique_schema()),
-                fetch=True
-            )
-        self.assertEqual(len(results), 2)
-        got_names = set(r.get('longstring') for r in results)
-        self.assertEqual(got_names, {'a' * 500, 'short'})
+#         with self.adapter.connection_named('test'):
+#             status, results = self.adapter.execute(
+#                 'select * from {}.{}.snapshot_actual'.format(self.default_database, self.unique_schema()),
+#                 fetch=True
+#             )
+#         self.assertEqual(len(results), 2)
+#         got_names = set(r.get('longstring') for r in results)
+#         self.assertEqual(got_names, {'a' * 500, 'short'})
 
 
 class TestSlowQuery(DBTIntegrationTest):

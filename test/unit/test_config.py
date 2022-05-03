@@ -1266,7 +1266,7 @@ class TestUnsetProfileConfig(BaseConfigTest):
         config = dbt.config.UnsetProfileConfig.from_parts(project, profile, {})
         project_config = config.to_project_config()
 
-        self.assertEquals(project_config["profile"], "")
+        self.assertEqual(project_config["profile"], "")
 
 
 class TestVariableRuntimeConfigFiles(BaseFileTest):

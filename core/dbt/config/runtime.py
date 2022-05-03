@@ -1,7 +1,7 @@
 import itertools
 import os
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, Any, Optional, Mapping, Iterator, Iterable, Tuple, List, MutableSet, Type
 
@@ -416,6 +416,9 @@ class UnsetProfileConfig(RuntimeConfig):
     """This class acts a lot _like_ a RuntimeConfig, except if your profile is
     missing, any access to profile members results in an exception.
     """
+
+    profile_name: str = field(repr=False)
+    target_name: str = field(repr=False)
 
     def __post_init__(self):
         # instead of futzing with InitVar overrides or rewriting __init__, just
